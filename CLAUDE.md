@@ -19,8 +19,8 @@ This is a React + Vite application for Seamless Restoration business with comple
 - React Router DOM 7 for client-side routing
 - React Hook Form for form management
 - Supabase for backend (auth, database, storage)
-- Tailwind CSS for responsive styling and design system
-- PostCSS with Autoprefixer for CSS processing
+- Tailwind CSS v4 for responsive styling and design system (CSS-first configuration)
+- PostCSS with @tailwindcss/postcss plugin and Autoprefixer
 - ESLint with React hooks and refresh plugins
 
 **Project Structure:**
@@ -39,6 +39,12 @@ This is a React + Vite application for Seamless Restoration business with comple
 - Uses flat config format with recommended rules
 - Enforces React Hooks rules and component refresh patterns
 - Ignores unused vars with uppercase/underscore prefix pattern
+
+**Tailwind CSS v4 Configuration:**
+- Uses CSS-first configuration with `@theme` directive instead of tailwind.config.js
+- Custom colors and design tokens defined in `src/index.css` using CSS variables
+- Configured with `@tailwindcss/postcss` plugin for PostCSS integration
+- Supports modern responsive design with custom shadows, animations, and typography
 
 ## Project Implementation Plan
 
