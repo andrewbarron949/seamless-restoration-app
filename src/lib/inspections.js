@@ -20,9 +20,14 @@ export async function createInspection(inspectionData) {
             case_number: inspectionData.caseNumber,
             claim_number: inspectionData.claimNumber,
             insurance_company: inspectionData.insuranceCompany,
-            policy_holder: inspectionData.policyHolder,
-            date_of_loss: inspectionData.dateOfLoss,
-            property_address: inspectionData.propertyAddress
+            client_name: inspectionData.policyHolder,
+            loss_date: inspectionData.dateOfLoss,
+            property_address: inspectionData.propertyAddress,
+            property_city: inspectionData.propertyCity || '',
+            property_state: inspectionData.propertyState || '',
+            property_zip: inspectionData.propertyZip || '',
+            loss_type: inspectionData.lossType || '',
+            created_by: inspectionData.inspectorId
           }
         ])
         .select()
@@ -55,17 +60,19 @@ export async function createInspection(inspectionData) {
 
     // Create the detailed inspection data
     const { data: details, error: detailsError } = await supabase
-      .from('inspection_details')
+      .from('inspection_items')
       .insert([
         {
           inspection_id: inspection.id,
           item_category: inspectionData.itemCategory,
+          item_type: inspectionData.itemType || '',
           item_description: inspectionData.itemDescription,
-          item_age: inspectionData.itemAge,
-          item_condition_before: inspectionData.itemConditionBefore,
+          room_location: inspectionData.roomLocation,
+          damage_type: inspectionData.damageType || '',
+          damage_severity: inspectionData.damageSeverity || 'minor',
           damage_description: inspectionData.damageDescription,
-          damage_types: inspectionData.damageType || [],
-          room_location: inspectionData.roomLocation
+          repair_recommendation: inspectionData.repairRecommendation || '',
+          replacement_needed: inspectionData.replacementNeeded || false
         }
       ])
       .select()
@@ -105,16 +112,15 @@ export async function uploadInspectionPhotos(inspectionId, photos) {
 
       // Save photo record to database
       const { data: photoData, error: photoError } = await supabase
-        .from('inspection_photos')
+        .from('photos')
         .insert([
           {
             inspection_id: inspectionId,
             file_name: photo.file.name,
             file_path: fileName,
-            file_url: urlData.publicUrl,
             file_size: photo.file.size,
-            file_type: photo.file.type,
-            created_at: new Date().toISOString()
+            mime_type: photo.file.type,
+            uploaded_at: new Date().toISOString()
           }
         ])
         .select()
@@ -137,7 +143,7 @@ export async function getInspections(inspectorId = null, limit = 50, offset = 0)
       .from('inspections')
       .select(`
         *,
-        user_profiles!inspector_id (
+        profiles!inspector_id (
           first_name,
           last_name,
           email
@@ -146,23 +152,29 @@ export async function getInspections(inspectorId = null, limit = 50, offset = 0)
           case_number,
           claim_number,
           insurance_company,
-          policy_holder,
-          date_of_loss,
-          property_address
+          client_name,
+          loss_date,
+          property_address,
+          property_city,
+          property_state,
+          property_zip,
+          loss_type
         ),
-        inspection_details (
+        inspection_items (
           item_category,
+          item_type,
           item_description,
-          item_age,
-          item_condition_before,
+          room_location,
+          damage_type,
+          damage_severity,
           damage_description,
-          damage_types,
-          room_location
+          repair_recommendation,
+          replacement_needed
         ),
-        inspection_photos (
+        photos (
           id,
           file_name,
-          file_url
+          file_path
         )
       `)
       .order('created_at', { ascending: false })
@@ -188,7 +200,7 @@ export async function getInspectionById(id) {
       .from('inspections')
       .select(`
         *,
-        user_profiles!inspector_id (
+        profiles!inspector_id (
           first_name,
           last_name,
           email
@@ -197,26 +209,32 @@ export async function getInspectionById(id) {
           case_number,
           claim_number,
           insurance_company,
-          policy_holder,
-          date_of_loss,
-          property_address
+          client_name,
+          loss_date,
+          property_address,
+          property_city,
+          property_state,
+          property_zip,
+          loss_type
         ),
-        inspection_details (
+        inspection_items (
           item_category,
+          item_type,
           item_description,
-          item_age,
-          item_condition_before,
+          room_location,
+          damage_type,
+          damage_severity,
           damage_description,
-          damage_types,
-          room_location
+          repair_recommendation,
+          replacement_needed
         ),
-        inspection_photos (
+        photos (
           id,
           file_name,
-          file_url,
+          file_path,
           file_size,
-          file_type,
-          created_at
+          mime_type,
+          uploaded_at
         )
       `)
       .eq('id', id)
@@ -254,7 +272,7 @@ export async function deleteInspection(id) {
   try {
     // First delete associated photos from storage and database
     const { data: photos } = await supabase
-      .from('inspection_photos')
+      .from('photos')
       .select('file_path')
       .eq('inspection_id', id)
 
@@ -267,14 +285,14 @@ export async function deleteInspection(id) {
 
       // Delete from database
       await supabase
-        .from('inspection_photos')
+        .from('photos')
         .delete()
         .eq('inspection_id', id)
     }
 
-    // Delete inspection details
+    // Delete inspection items
     await supabase
-      .from('inspection_details')
+      .from('inspection_items')
       .delete()
       .eq('inspection_id', id)
 

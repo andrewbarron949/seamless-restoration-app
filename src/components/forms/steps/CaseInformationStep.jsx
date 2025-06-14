@@ -2,20 +2,20 @@ export default function CaseInformationStep({ form }) {
   const { register, formState: { errors } } = form
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-4">
+    <div className="space-y-8">
+      <div className="text-center sm:text-left">
+        <h3 className="text-xl sm:text-2xl font-bold text-gray-900">
           Case Information
         </h3>
-        <p className="text-sm text-gray-600 mb-6">
+        <p className="mt-2 text-sm sm:text-base text-gray-600">
           Enter the basic case and claim information for this inspection.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label htmlFor="caseNumber" className="block text-sm font-medium text-gray-700">
-            Case Number *
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="form-group">
+          <label htmlFor="caseNumber" className="form-label">
+            Case Number <span className="text-red-500">*</span>
           </label>
           <input
             id="caseNumber"
@@ -27,17 +27,17 @@ export default function CaseInformationStep({ form }) {
                 message: 'Case number must be at least 3 characters'
               }
             })}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="input-field"
             placeholder="Enter case number"
           />
           {errors.caseNumber && (
-            <p className="mt-1 text-sm text-red-600">{errors.caseNumber.message}</p>
+            <p className="form-error">{errors.caseNumber.message}</p>
           )}
         </div>
 
-        <div>
-          <label htmlFor="claimNumber" className="block text-sm font-medium text-gray-700">
-            Claim Number *
+        <div className="form-group">
+          <label htmlFor="claimNumber" className="form-label">
+            Claim Number <span className="text-red-500">*</span>
           </label>
           <input
             id="claimNumber"
@@ -49,24 +49,24 @@ export default function CaseInformationStep({ form }) {
                 message: 'Claim number must be at least 3 characters'
               }
             })}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="input-field"
             placeholder="Enter claim number"
           />
           {errors.claimNumber && (
-            <p className="mt-1 text-sm text-red-600">{errors.claimNumber.message}</p>
+            <p className="form-error">{errors.claimNumber.message}</p>
           )}
         </div>
 
-        <div>
-          <label htmlFor="insuranceCompany" className="block text-sm font-medium text-gray-700">
-            Insurance Company *
+        <div className="form-group">
+          <label htmlFor="insuranceCompany" className="form-label">
+            Insurance Company <span className="text-red-500">*</span>
           </label>
           <select
             id="insuranceCompany"
             {...register('insuranceCompany', {
               required: 'Insurance company is required'
             })}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="input-field"
           >
             <option value="">Select insurance company</option>
             <option value="State Farm">State Farm</option>
@@ -82,13 +82,13 @@ export default function CaseInformationStep({ form }) {
             <option value="Other">Other</option>
           </select>
           {errors.insuranceCompany && (
-            <p className="mt-1 text-sm text-red-600">{errors.insuranceCompany.message}</p>
+            <p className="form-error">{errors.insuranceCompany.message}</p>
           )}
         </div>
 
-        <div>
-          <label htmlFor="policyHolder" className="block text-sm font-medium text-gray-700">
-            Policy Holder Name *
+        <div className="form-group">
+          <label htmlFor="policyHolder" className="form-label">
+            Policy Holder Name <span className="text-red-500">*</span>
           </label>
           <input
             id="policyHolder"
@@ -100,17 +100,17 @@ export default function CaseInformationStep({ form }) {
                 message: 'Policy holder name must be at least 2 characters'
               }
             })}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="input-field"
             placeholder="Enter policy holder name"
           />
           {errors.policyHolder && (
-            <p className="mt-1 text-sm text-red-600">{errors.policyHolder.message}</p>
+            <p className="form-error">{errors.policyHolder.message}</p>
           )}
         </div>
 
-        <div>
-          <label htmlFor="dateOfLoss" className="block text-sm font-medium text-gray-700">
-            Date of Loss *
+        <div className="form-group lg:col-span-2">
+          <label htmlFor="dateOfLoss" className="form-label">
+            Date of Loss <span className="text-red-500">*</span>
           </label>
           <input
             id="dateOfLoss"
@@ -120,7 +120,7 @@ export default function CaseInformationStep({ form }) {
               validate: (value) => {
                 const selectedDate = new Date(value)
                 const today = new Date()
-                today.setHours(23, 59, 59, 999) // Set to end of today
+                today.setHours(23, 59, 59, 999)
                 
                 if (selectedDate > today) {
                   return 'Date of loss cannot be in the future'
@@ -128,24 +128,27 @@ export default function CaseInformationStep({ form }) {
                 return true
               }
             })}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="input-field max-w-xs"
           />
           {errors.dateOfLoss && (
-            <p className="mt-1 text-sm text-red-600">{errors.dateOfLoss.message}</p>
+            <p className="form-error">{errors.dateOfLoss.message}</p>
           )}
         </div>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-        <div className="flex">
+      <div className="bg-primary-50 border border-primary-200 rounded-xl p-4 sm:p-6">
+        <div className="flex items-start">
           <div className="flex-shrink-0">
-            <svg className="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="h-5 w-5 text-primary-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
             </svg>
           </div>
           <div className="ml-3">
-            <p className="text-sm text-blue-700">
-              <strong>Note:</strong> All fields marked with * are required. Please ensure all information is accurate before proceeding to the next step.
+            <h4 className="text-sm font-semibold text-primary-800 mb-1">
+              Important Information
+            </h4>
+            <p className="text-sm text-primary-700">
+              All fields marked with <span className="text-red-500 font-medium">*</span> are required. Please ensure all information is accurate before proceeding to the next step. This information will be used to identify and track your inspection case.
             </p>
           </div>
         </div>

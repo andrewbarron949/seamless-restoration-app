@@ -175,21 +175,23 @@ export default function InspectionForm() {
   const CurrentStepComponent = STEPS[currentStep].component
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white shadow rounded-lg">
+    <div className="min-h-screen bg-gray-50">
+      <div className="container max-w-4xl py-6 sm:py-8 lg:py-12">
+        <div className="card animate-fade-in">
           {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h1 className="text-2xl font-semibold text-gray-900">
-              New Inspection
-            </h1>
-            <p className="mt-1 text-sm text-gray-600">
-              Complete the inspection form step by step
-            </p>
+          <div className="card-header">
+            <div className="text-center sm:text-left">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                New Inspection
+              </h1>
+              <p className="mt-2 text-sm sm:text-base text-gray-600">
+                Complete the inspection form step by step
+              </p>
+            </div>
           </div>
 
           {/* Progress Indicator */}
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="px-4 sm:px-6 py-4 bg-gray-50 border-b border-gray-200">
             <ProgressIndicator 
               steps={STEPS} 
               currentStep={currentStep}
@@ -197,52 +199,66 @@ export default function InspectionForm() {
           </div>
 
           {/* Form Content */}
-          <form onSubmit={form.handleSubmit(handleSubmit)}>
-            <div className="px-6 py-8">
-              <CurrentStepComponent 
-                form={form}
-                onNext={handleNext}
-                onPrevious={handlePrevious}
-              />
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col min-h-0">
+            <div className="flex-1 px-4 sm:px-6 py-6 sm:py-8 overflow-y-auto">
+              <div className="animate-slide-up">
+                <CurrentStepComponent 
+                  form={form}
+                  onNext={handleNext}
+                  onPrevious={handlePrevious}
+                />
+              </div>
             </div>
 
-            {/* Navigation */}
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-between">
-              <button
-                type="button"
-                onClick={handlePrevious}
-                disabled={currentStep === 0}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Previous
-              </button>
-
-              <div className="flex space-x-3">
+            {/* Navigation - Fixed at bottom on mobile */}
+            <div className="sticky bottom-0 bg-white border-t border-gray-200 px-4 sm:px-6 py-4">
+              <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
                 <button
                   type="button"
-                  onClick={() => navigate('/dashboard')}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                  onClick={handlePrevious}
+                  disabled={currentStep === 0}
+                  className="btn-outline order-2 sm:order-1 w-full sm:w-auto"
                 >
-                  Save as Draft
+                  Previous
                 </button>
 
-                {currentStep < STEPS.length - 1 ? (
+                <div className="flex flex-col sm:flex-row gap-3 order-1 sm:order-2">
                   <button
                     type="button"
-                    onClick={handleNext}
-                    className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700"
+                    onClick={() => navigate('/dashboard')}
+                    className="btn-secondary w-full sm:w-auto"
                   >
-                    Next
+                    Save as Draft
                   </button>
-                ) : (
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? 'Submitting...' : 'Submit Inspection'}
-                  </button>
-                )}
+
+                  {currentStep < STEPS.length - 1 ? (
+                    <button
+                      type="button"
+                      onClick={handleNext}
+                      className="btn-primary w-full sm:w-auto"
+                    >
+                      Next Step
+                    </button>
+                  ) : (
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="btn-primary w-full sm:w-auto bg-green-600 hover:bg-green-700 focus:ring-green-500"
+                    >
+                      {isSubmitting ? (
+                        <div className="flex items-center justify-center">
+                          <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Submitting...
+                        </div>
+                      ) : (
+                        'Submit Inspection'
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </form>
