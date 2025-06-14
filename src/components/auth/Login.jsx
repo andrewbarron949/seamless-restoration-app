@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 
 export default function Login() {
@@ -9,6 +9,8 @@ export default function Login() {
   const [error, setError] = useState('')
   const { signIn } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const successMessage = location.state?.message
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -51,6 +53,16 @@ export default function Login() {
 
             {/* Form */}
             <form className="space-y-6" onSubmit={handleSubmit}>
+              {successMessage && (
+                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm animate-slide-up">
+                  <div className="flex items-center">
+                    <svg className="h-5 w-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM13.707 7.293a1 1 0 00-1.414-1.414L9 9.586 7.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    {successMessage}
+                  </div>
+                </div>
+              )}
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm animate-slide-up">
                   <div className="flex items-center">
