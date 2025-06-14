@@ -128,6 +128,7 @@ This is a React + Vite application for Seamless Restoration business with comple
 - ✅ FIXED: AuthContext.jsx table name bug (`user_profiles` → `profiles`)
 - ✅ DEPLOYED: `fix-infinite-recursion-complete.sql` - **CURRENT SOLUTION** in production
 - ✅ WORKING: Form submission now functional without infinite recursion errors
+- ✅ FIXED: inspection_type constraint violation (changed 'damage_assessment' to 'initial')
 
 **SQL Fix Files:**
 - `fix-rls-policies.sql` - Original flawed version (DO NOT USE - wrong table names)
