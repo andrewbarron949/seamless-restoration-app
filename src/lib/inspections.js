@@ -45,7 +45,7 @@ export async function createInspection(inspectionData) {
           case_id: caseData.id,
           inspector_id: inspectionData.inspectorId,
           inspection_date: new Date().toISOString().split('T')[0], // Today's date
-          inspection_type: 'damage_assessment', // Default type
+          inspection_type: 'initial', // Default type
           status: inspectionData.status || 'submitted',
           location_details: inspectionData.propertyAddress,
           general_notes: inspectionData.inspectorNotes || '',
