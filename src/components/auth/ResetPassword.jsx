@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import { supabase } from '../../lib/supabase'
 
 export default function ResetPassword() {
   const [password, setPassword] = useState('')
@@ -8,21 +9,45 @@ export default function ResetPassword() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [isValidToken, setIsValidToken] = useState(false)
+  const [sessionLoading, setSessionLoading] = useState(true)
   const { updatePassword } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
   useEffect(() => {
-    // Check if we have a valid reset token in the URL hash
-    const hashParams = new URLSearchParams(location.hash.substring(1))
-    const accessToken = hashParams.get('access_token')
-    const type = hashParams.get('type')
-    
-    if (accessToken && type === 'recovery') {
-      setIsValidToken(true)
-    } else {
-      setError('Invalid or expired reset link. Please request a new password reset.')
+    const handlePasswordReset = async () => {
+      try {
+        // Check if we have a valid reset token in the URL hash
+        const hashParams = new URLSearchParams(location.hash.substring(1))
+        const accessToken = hashParams.get('access_token')
+        const refreshToken = hashParams.get('refresh_token')
+        const type = hashParams.get('type')
+        
+        if (accessToken && refreshToken && type === 'recovery') {
+          // Set the session with the tokens from the URL
+          const { error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken
+          })
+          
+          if (error) {
+            console.error('Error setting session:', error)
+            setError('Invalid or expired reset link. Please request a new password reset.')
+          } else {
+            setIsValidToken(true)
+          }
+        } else {
+          setError('Invalid or expired reset link. Please request a new password reset.')
+        }
+      } catch (err) {
+        console.error('Error in password reset handler:', err)
+        setError('An error occurred processing the reset link. Please request a new password reset.')
+      } finally {
+        setSessionLoading(false)
+      }
     }
+    
+    handlePasswordReset()
   }, [location])
 
   const handleSubmit = async (e) => {
@@ -52,20 +77,47 @@ export default function ResetPassword() {
     try {
       const { error } = await updatePassword(password)
       if (error) {
-        setError(error.message)
+        console.error('Password update error:', error)
+        setError(error.message || 'Failed to update password. Please try again.')
       } else {
-        // Success - redirect to login with success message
+        // Success - clear local storage and redirect to login with success message
+        localStorage.clear()
+        
+        // Sign out to clear the session
+        await supabase.auth.signOut()
+        
         navigate('/login', { 
           state: { message: 'Password updated successfully. Please sign in with your new password.' }
         })
       }
-    } catch {
-      setError('An unexpected error occurred')
+    } catch (err) {
+      console.error('Unexpected error during password update:', err)
+      setError('An unexpected error occurred. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
+  // Show loading while processing the reset link
+  if (sessionLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+            <h2 className="mt-6 text-xl font-semibold text-gray-900">
+              Processing reset link...
+            </h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Please wait while we verify your password reset request.
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Show error if token is invalid
   if (!isValidToken && error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
