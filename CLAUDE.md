@@ -117,12 +117,17 @@ This is a React + Vite application for Seamless Restoration business with comple
 - Fixed RLS policy infinite recursion preventing form submission
 
 **Recent Fixes:**
-- ✅ FIXED: Resolved Supabase RLS policy infinite recursion issue in profiles table
-- ✅ FIXED: Corrected table name mismatch (user_profiles → profiles) in AuthContext.jsx
-- ✅ FIXED: Eliminated circular dependencies in all RLS policies using direct role queries
-- ✅ FIXED: Database schema updated to prevent "Failed to create inspection: infinite recursion detected" errors
-- ✅ APPLIED: fix-rls-policies.sql successfully deployed to Supabase - RLS infinite recursion fully resolved
-- ✅ VERIFIED: Inspection form submission now working correctly without policy errors
+- ❌ ISSUE: Original fix-rls-policies.sql contained circular dependency causing infinite recursion
+- ❌ ISSUE: fix-rls-policies-corrected.sql required auth schema permissions (permission denied error)
+- ✅ CREATED: fix-rls-policies-simple.sql - eliminates recursion using ownership-based policies only
+- ✅ APPROACH: Removed role-based queries from user_profiles table to prevent circular dependency
+- ✅ SOLUTION: Uses direct auth.uid() checks instead of role queries to avoid infinite loops
+- 🔄 STATUS: Ready to apply fix-rls-policies-simple.sql to resolve RLS infinite recursion issue
+
+**SQL Fix Files:**
+- `fix-rls-policies.sql` - Original flawed version (DO NOT USE - causes infinite recursion)
+- `fix-rls-policies-corrected.sql` - Advanced version (requires auth schema permissions)  
+- `fix-rls-policies-simple.sql` - **RECOMMENDED** - Simple ownership-based policies without recursion
 
 ### DASHBOARD & SEARCH FUNCTIONALITY
 • Create Dashboard component with responsive layout
