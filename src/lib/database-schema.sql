@@ -173,12 +173,15 @@ CREATE POLICY "Users can view cases they created or are assigned to" ON public.c
   FOR SELECT USING (
     created_by = auth.uid() OR
     EXISTS (
-      SELECT 1 FROM public.inspections
-      WHERE case_id = cases.id AND inspector_id = auth.uid()
-    ) OR
-    EXISTS (
       SELECT 1 FROM public.profiles
       WHERE id = auth.uid() AND role IN ('admin', 'manager')
+    )
+  );
+
+CREATE POLICY "Inspectors can view assigned cases" ON public.cases
+  FOR SELECT USING (
+    id IN (
+      SELECT DISTINCT case_id FROM public.inspections WHERE inspector_id = auth.uid()
     )
   );
 
@@ -195,16 +198,19 @@ CREATE POLICY "Case creators and admins can update cases" ON public.cases
   );
 
 -- Inspections policies
-CREATE POLICY "Users can view their own inspections and related cases" ON public.inspections
+CREATE POLICY "Users can view their own inspections" ON public.inspections
   FOR SELECT USING (
     inspector_id = auth.uid() OR
     EXISTS (
-      SELECT 1 FROM public.cases
-      WHERE id = inspections.case_id AND created_by = auth.uid()
-    ) OR
-    EXISTS (
       SELECT 1 FROM public.profiles
       WHERE id = auth.uid() AND role IN ('admin', 'manager')
+    )
+  );
+
+CREATE POLICY "Case creators can view inspections for their cases" ON public.inspections
+  FOR SELECT USING (
+    case_id IN (
+      SELECT id FROM public.cases WHERE created_by = auth.uid()
     )
   );
 
@@ -221,68 +227,66 @@ CREATE POLICY "Inspectors can update their own inspections" ON public.inspection
   );
 
 -- Inspection items policies
-CREATE POLICY "Users can view items for accessible inspections" ON public.inspection_items
+CREATE POLICY "Users can view items for their inspections" ON public.inspection_items
   FOR SELECT USING (
+    inspection_id IN (
+      SELECT id FROM public.inspections WHERE inspector_id = auth.uid()
+    ) OR
     EXISTS (
-      SELECT 1 FROM public.inspections
-      WHERE id = inspection_items.inspection_id AND (
-        inspector_id = auth.uid() OR
-        EXISTS (
-          SELECT 1 FROM public.cases
-          WHERE id = inspections.case_id AND created_by = auth.uid()
-        ) OR
-        EXISTS (
-          SELECT 1 FROM public.profiles
-          WHERE id = auth.uid() AND role IN ('admin', 'manager')
-        )
-      )
+      SELECT 1 FROM public.profiles
+      WHERE id = auth.uid() AND role IN ('admin', 'manager')
+    )
+  );
+
+CREATE POLICY "Case creators can view items for their case inspections" ON public.inspection_items
+  FOR SELECT USING (
+    inspection_id IN (
+      SELECT i.id FROM public.inspections i
+      JOIN public.cases c ON i.case_id = c.id
+      WHERE c.created_by = auth.uid()
     )
   );
 
 CREATE POLICY "Users can manage items for their inspections" ON public.inspection_items
   FOR ALL USING (
+    inspection_id IN (
+      SELECT id FROM public.inspections WHERE inspector_id = auth.uid()
+    ) OR
     EXISTS (
-      SELECT 1 FROM public.inspections
-      WHERE id = inspection_items.inspection_id AND (
-        inspector_id = auth.uid() OR
-        EXISTS (
-          SELECT 1 FROM public.profiles
-          WHERE id = auth.uid() AND role IN ('admin', 'manager')
-        )
-      )
+      SELECT 1 FROM public.profiles
+      WHERE id = auth.uid() AND role IN ('admin', 'manager')
     )
   );
 
 -- Photos policies
-CREATE POLICY "Users can view photos for accessible inspections" ON public.photos
+CREATE POLICY "Users can view photos for their inspections" ON public.photos
   FOR SELECT USING (
+    inspection_id IN (
+      SELECT id FROM public.inspections WHERE inspector_id = auth.uid()
+    ) OR
     EXISTS (
-      SELECT 1 FROM public.inspections
-      WHERE id = photos.inspection_id AND (
-        inspector_id = auth.uid() OR
-        EXISTS (
-          SELECT 1 FROM public.cases
-          WHERE id = inspections.case_id AND created_by = auth.uid()
-        ) OR
-        EXISTS (
-          SELECT 1 FROM public.profiles
-          WHERE id = auth.uid() AND role IN ('admin', 'manager')
-        )
-      )
+      SELECT 1 FROM public.profiles
+      WHERE id = auth.uid() AND role IN ('admin', 'manager')
+    )
+  );
+
+CREATE POLICY "Case creators can view photos for their case inspections" ON public.photos
+  FOR SELECT USING (
+    inspection_id IN (
+      SELECT i.id FROM public.inspections i
+      JOIN public.cases c ON i.case_id = c.id
+      WHERE c.created_by = auth.uid()
     )
   );
 
 CREATE POLICY "Users can manage photos for their inspections" ON public.photos
   FOR ALL USING (
+    inspection_id IN (
+      SELECT id FROM public.inspections WHERE inspector_id = auth.uid()
+    ) OR
     EXISTS (
-      SELECT 1 FROM public.inspections
-      WHERE id = photos.inspection_id AND (
-        inspector_id = auth.uid() OR
-        EXISTS (
-          SELECT 1 FROM public.profiles
-          WHERE id = auth.uid() AND role IN ('admin', 'manager')
-        )
-      )
+      SELECT 1 FROM public.profiles
+      WHERE id = auth.uid() AND role IN ('admin', 'manager')
     )
   );
 

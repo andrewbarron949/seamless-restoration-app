@@ -92,6 +92,7 @@ This is a React + Vite application for Seamless Restoration business with comple
 ✅ Create database tables (cases, inspection_details, inspection_photos)
 ✅ Set up Row Level Security policies
 ✅ Configure Supabase Storage bucket for photos
+✅ Fix RLS policy infinite recursion issue
 
 **Database Schema:**
 - `cases` - Case and claim information (case_number, claim_number, insurance_company, policy_holder, date_of_loss, property_address)
@@ -113,6 +114,12 @@ This is a React + Vite application for Seamless Restoration business with comple
 - Professional authentication interface with animations
 - Comprehensive form validation and error handling
 - Smooth animations and loading states
+- Fixed RLS policy infinite recursion preventing form submission
+
+**Recent Fixes:**
+- Resolved Supabase RLS policy infinite recursion between cases and inspections tables
+- Split circular policy dependencies into separate non-circular policies
+- Updated database schema to prevent "Failed to create inspection: infinite recursion detected" errors
 
 ### DASHBOARD & SEARCH FUNCTIONALITY
 • Create Dashboard component with responsive layout
