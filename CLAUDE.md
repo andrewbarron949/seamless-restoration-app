@@ -11,17 +11,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture
 
-This is a React + Vite application for Seamless Restoration business. Currently in initial state with default Vite template.
+This is a React + Vite application for Seamless Restoration business with complete authentication system.
 
 **Tech Stack:**
 - React 19 with JSX
 - Vite 6 for build tooling and dev server
+- React Router DOM 7 for client-side routing
+- Supabase for backend (auth, database, storage)
 - ESLint with React hooks and refresh plugins
 
 **Project Structure:**
 - `src/` - Source code with React components
+- `src/components/` - Reusable UI components
+- `src/components/auth/` - Authentication components (Login, Signup, ForgotPassword)
+- `src/contexts/` - React Context providers (AuthContext)
+- `src/hooks/` - Custom React hooks (useAuth included in AuthContext)
+- `src/lib/` - Utility libraries and configurations (Supabase client)
 - `public/` - Static assets served directly
-- Entry point: `src/main.jsx` renders `App.jsx` into `#root`
+- Entry point: `src/main.jsx` renders `App.jsx` with routing
 
 **ESLint Configuration:**
 - Uses flat config format with recommended rules
@@ -39,17 +46,17 @@ This is a React + Vite application for Seamless Restoration business. Currently 
 ✅ Enable Row Level Security on all tables
 
 ### AUTHENTICATION SYSTEM
-• Configure Supabase Auth settings
-• Install React Router for navigation
-• Create AuthContext for state management
-• Build Login component with email/password form
-• Build Signup component for user registration
-• Build ForgotPassword component for password reset
-• Create ProtectedRoute component for auth guards
-• Implement role-based access (Admin, Manager, Inspector)
-• Add role field to user profiles table
-• Create useAuth custom hook
-• Test complete authentication flow
+✅ Configure Supabase Auth settings
+✅ Install React Router for navigation
+✅ Create AuthContext for state management
+✅ Build Login component with email/password form
+✅ Build Signup component for user registration
+✅ Build ForgotPassword component for password reset
+✅ Create ProtectedRoute component for auth guards
+✅ Implement role-based access (Admin, Manager, Inspector)
+✅ Add role field to user profiles table
+✅ Create useAuth custom hook
+✅ Test complete authentication flow
 
 ### MULTI-STEP INSPECTION FORM
 • Install react-hook-form for form management
