@@ -5,6 +5,7 @@ import Login from './components/auth/Login'
 import Signup from './components/auth/Signup'
 import ForgotPassword from './components/auth/ForgotPassword'
 import Dashboard from './components/Dashboard'
+import InspectionForm from './components/forms/InspectionForm'
 
 function App() {
   return (
@@ -19,6 +20,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/inspection/new" 
+            element={
+              <ProtectedRoute>
+                <InspectionForm />
               </ProtectedRoute>
             } 
           />

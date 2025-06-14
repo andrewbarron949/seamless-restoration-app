@@ -57,7 +57,7 @@ export default function Signup() {
           navigate('/login')
         }, 3000)
       }
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred')
     } finally {
       setLoading(false)

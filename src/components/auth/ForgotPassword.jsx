@@ -22,7 +22,7 @@ export default function ForgotPassword() {
       } else {
         setMessage('Check your email for password reset instructions')
       }
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred')
     } finally {
       setLoading(false)
