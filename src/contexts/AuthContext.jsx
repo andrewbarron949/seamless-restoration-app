@@ -64,7 +64,7 @@ export function AuthProvider({ children }) {
       // Create user profile
       if (data.user) {
         const { error: profileError } = await supabase
-          .from('user_profiles')
+          .from('profiles')
           .insert([
             {
               id: data.user.id,
