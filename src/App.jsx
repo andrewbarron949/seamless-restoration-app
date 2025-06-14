@@ -6,6 +6,7 @@ import Signup from './components/auth/Signup'
 import ForgotPassword from './components/auth/ForgotPassword'
 import Dashboard from './components/Dashboard'
 import InspectionForm from './components/forms/InspectionForm'
+import InspectionsList from './components/InspectionsList'
 
 function App() {
   return (
@@ -28,6 +29,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <InspectionForm />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/inspections" 
+            element={
+              <ProtectedRoute>
+                <InspectionsList />
               </ProtectedRoute>
             } 
           />

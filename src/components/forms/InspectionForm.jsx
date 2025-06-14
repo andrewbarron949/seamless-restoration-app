@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { createInspection, uploadInspectionPhotos } from '../../lib/inspections'
 import ProgressIndicator from '../ui/ProgressIndicator'
+import Navigation from '../Navigation'
 import CaseInformationStep from './steps/CaseInformationStep'
 import ItemDetailsStep from './steps/ItemDetailsStep'
 import LocationNotesStep from './steps/LocationNotesStep'
@@ -68,13 +69,22 @@ export default function InspectionForm() {
     return () => subscription.unsubscribe()
   }, [form])
 
-  // Load draft from localStorage on mount
+  // Load draft from localStorage on mount, but only if user wants to continue
   useEffect(() => {
-    const savedDraft = loadDraftFromLocalStorage()
-    if (savedDraft) {
-      Object.keys(savedDraft).forEach(key => {
-        form.setValue(key, savedDraft[key])
-      })
+    const urlParams = new URLSearchParams(window.location.search)
+    const isNewInspection = urlParams.get('new') === 'true'
+    
+    if (isNewInspection) {
+      // Clear any existing draft when explicitly starting new
+      clearDraftFromLocalStorage()
+    } else {
+      // Load draft only if not starting new
+      const savedDraft = loadDraftFromLocalStorage()
+      if (savedDraft) {
+        Object.keys(savedDraft).forEach(key => {
+          form.setValue(key, savedDraft[key])
+        })
+      }
     }
   }, [form])
 
@@ -176,6 +186,7 @@ export default function InspectionForm() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Navigation />
       <div className="container max-w-4xl py-6 sm:py-8 lg:py-12">
         <div className="card animate-fade-in">
           {/* Header */}

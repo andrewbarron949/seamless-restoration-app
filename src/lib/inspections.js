@@ -106,7 +106,7 @@ export async function uploadInspectionPhotos(inspectionId, photos) {
       if (uploadError) throw uploadError
 
       // Get public URL
-      const { data: urlData } = supabase.storage
+      const { data: _urlData } = supabase.storage
         .from('inspection-photos')
         .getPublicUrl(fileName)
 
