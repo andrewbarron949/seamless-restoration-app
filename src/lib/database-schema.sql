@@ -162,20 +162,14 @@ CREATE POLICY "Users can update their own profile" ON public.profiles
 
 CREATE POLICY "Admins can view all profiles" ON public.profiles
   FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role = 'admin'
-    )
+    (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin'
   );
 
 -- Cases policies
 CREATE POLICY "Users can view cases they created or are assigned to" ON public.cases
   FOR SELECT USING (
     created_by = auth.uid() OR
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role IN ('admin', 'manager')
-    )
+    (SELECT role FROM public.profiles WHERE id = auth.uid()) IN ('admin', 'manager')
   );
 
 CREATE POLICY "Inspectors can view assigned cases" ON public.cases
@@ -191,20 +185,14 @@ CREATE POLICY "Users can create cases" ON public.cases
 CREATE POLICY "Case creators and admins can update cases" ON public.cases
   FOR UPDATE USING (
     created_by = auth.uid() OR
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role IN ('admin', 'manager')
-    )
+    (SELECT role FROM public.profiles WHERE id = auth.uid()) IN ('admin', 'manager')
   );
 
 -- Inspections policies
 CREATE POLICY "Users can view their own inspections" ON public.inspections
   FOR SELECT USING (
     inspector_id = auth.uid() OR
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role IN ('admin', 'manager')
-    )
+    (SELECT role FROM public.profiles WHERE id = auth.uid()) IN ('admin', 'manager')
   );
 
 CREATE POLICY "Case creators can view inspections for their cases" ON public.inspections
@@ -220,10 +208,7 @@ CREATE POLICY "Inspectors can create inspections" ON public.inspections
 CREATE POLICY "Inspectors can update their own inspections" ON public.inspections
   FOR UPDATE USING (
     inspector_id = auth.uid() OR
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role IN ('admin', 'manager')
-    )
+    (SELECT role FROM public.profiles WHERE id = auth.uid()) IN ('admin', 'manager')
   );
 
 -- Inspection items policies
@@ -232,10 +217,7 @@ CREATE POLICY "Users can view items for their inspections" ON public.inspection_
     inspection_id IN (
       SELECT id FROM public.inspections WHERE inspector_id = auth.uid()
     ) OR
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role IN ('admin', 'manager')
-    )
+    (SELECT role FROM public.profiles WHERE id = auth.uid()) IN ('admin', 'manager')
   );
 
 CREATE POLICY "Case creators can view items for their case inspections" ON public.inspection_items
@@ -252,10 +234,7 @@ CREATE POLICY "Users can manage items for their inspections" ON public.inspectio
     inspection_id IN (
       SELECT id FROM public.inspections WHERE inspector_id = auth.uid()
     ) OR
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role IN ('admin', 'manager')
-    )
+    (SELECT role FROM public.profiles WHERE id = auth.uid()) IN ('admin', 'manager')
   );
 
 -- Photos policies
@@ -264,10 +243,7 @@ CREATE POLICY "Users can view photos for their inspections" ON public.photos
     inspection_id IN (
       SELECT id FROM public.inspections WHERE inspector_id = auth.uid()
     ) OR
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role IN ('admin', 'manager')
-    )
+    (SELECT role FROM public.profiles WHERE id = auth.uid()) IN ('admin', 'manager')
   );
 
 CREATE POLICY "Case creators can view photos for their case inspections" ON public.photos
@@ -284,10 +260,7 @@ CREATE POLICY "Users can manage photos for their inspections" ON public.photos
     inspection_id IN (
       SELECT id FROM public.inspections WHERE inspector_id = auth.uid()
     ) OR
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role IN ('admin', 'manager')
-    )
+    (SELECT role FROM public.profiles WHERE id = auth.uid()) IN ('admin', 'manager')
   );
 
 -- Activity log policies
@@ -296,10 +269,7 @@ CREATE POLICY "Users can view their own activity" ON public.activity_log
 
 CREATE POLICY "Admins can view all activity" ON public.activity_log
   FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role = 'admin'
-    )
+    (SELECT role FROM public.profiles WHERE id = auth.uid()) = 'admin'
   );
 
 -- Functions for updated_at timestamps

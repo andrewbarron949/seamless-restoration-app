@@ -117,9 +117,11 @@ This is a React + Vite application for Seamless Restoration business with comple
 - Fixed RLS policy infinite recursion preventing form submission
 
 **Recent Fixes:**
-- Resolved Supabase RLS policy infinite recursion between cases and inspections tables
-- Split circular policy dependencies into separate non-circular policies
-- Updated database schema to prevent "Failed to create inspection: infinite recursion detected" errors
+- ✅ FIXED: Resolved Supabase RLS policy infinite recursion issue in profiles table
+- ✅ FIXED: Corrected table name mismatch (user_profiles → profiles) in AuthContext.jsx
+- ✅ FIXED: Eliminated circular dependencies in all RLS policies using direct role queries
+- ✅ FIXED: Database schema updated to prevent "Failed to create inspection: infinite recursion detected" errors
+- Created fix-rls-policies.sql for easy deployment of policy updates to Supabase
 
 ### DASHBOARD & SEARCH FUNCTIONALITY
 • Create Dashboard component with responsive layout

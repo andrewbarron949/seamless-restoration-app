@@ -36,7 +36,7 @@ export function AuthProvider({ children }) {
   const fetchUserProfile = async (userId) => {
     try {
       const { data, error } = await supabase
-        .from('user_profiles')
+        .from('profiles')
         .select('*')
         .eq('id', userId)
         .single()
