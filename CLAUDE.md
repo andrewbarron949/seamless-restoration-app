@@ -3,7 +3,7 @@
 ## Project Overview
 **Phase**: Authentication System Complete ✅  
 **Current State**: Full authentication system implemented with NextAuth.js, user registration, login, and protected routes. Ready for claims management development.  
-**Last Updated**: June 17, 2025
+**Last Updated**: June 17, 2025 (Documentation Refresh)
 
 This is a Next.js web application for Seamless Restoration that will provide inspection management, claims tracking, and photo documentation capabilities. The app is designed for insurance inspectors, managers, and clients to streamline the restoration claims process.
 
@@ -112,6 +112,8 @@ model User {
   inspections Inspection[]
   accounts    Account[]                       // NextAuth accounts
   sessions    Session[]                       // NextAuth sessions
+  
+  @@map("users")                              // Table name mapping
 }
 
 model Claim {
@@ -128,6 +130,8 @@ model Claim {
   
   user        User         @relation(fields: [userId], references: [id])
   inspections Inspection[]
+  
+  @@map("claims")                             // Table name mapping
 }
 
 model Inspection {
@@ -142,6 +146,8 @@ model Inspection {
   claim     Claim  @relation(fields: [claimId], references: [id])
   inspector User   @relation(fields: [inspectorId], references: [id])
   photos    Photo[]
+  
+  @@map("inspections")                        // Table name mapping
 }
 
 model Photo {
@@ -155,6 +161,8 @@ model Photo {
   createdAt    DateTime  @default(now())
   
   inspection Inspection @relation(fields: [inspectionId], references: [id])
+  
+  @@map("photos")                             // Table name mapping
 }
 
 // NextAuth Models
@@ -175,6 +183,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@map("accounts")                           // Table name mapping
 }
 
 model Session {
@@ -184,6 +193,8 @@ model Session {
   expires      DateTime
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("sessions")                           // Table name mapping
 }
 
 model VerificationToken {
@@ -192,6 +203,7 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+  @@map("verification_tokens")               // Table name mapping
 }
 ```
 
@@ -590,32 +602,44 @@ export const authOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null
+        if (!credentials?.email || !credentials?.password) {
+          return null
+        }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
-        })
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email }
+          })
 
-        if (!user || !user.password) return null
+          if (!user || !user.password) {
+            return null
+          }
 
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          user.password
-        )
+          const isPasswordValid = await bcrypt.compare(
+            credentials.password,
+            user.password
+          )
 
-        if (!isPasswordValid) return null
+          if (!isPasswordValid) {
+            return null
+          }
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          }
+        } catch (error) {
+          console.error("Auth error:", error)
+          return null
         }
       }
     })
   ],
   session: { strategy: "jwt" as const },
   callbacks: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     jwt: async ({ token, user }: { token: any; user?: any }) => {
       if (user) {
         token.role = user.role
@@ -623,6 +647,7 @@ export const authOptions = {
       }
       return token
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     session: async ({ session, token }: { session: any; token: any }) => {
       if (token) {
         session.user.id = token.id as string
@@ -692,11 +717,12 @@ import { withAuth } from "next-auth/middleware"
 
 export default withAuth(
   function middleware(req) {
-    // Additional middleware logic here if needed
+    // Add any additional middleware logic here if needed
   },
   {
     callbacks: {
       authorized: ({ token, req }) => {
+        // Check if user is authenticated for protected routes
         const { pathname } = req.nextUrl
         
         // Allow access to public routes
@@ -713,6 +739,20 @@ export default withAuth(
     },
   }
 )
+
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api/auth (NextAuth.js API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public files (robots.txt, sitemap.xml, etc.)
+     */
+    '/((?!api/auth|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)',
+  ],
+}
 ```
 
 ---
