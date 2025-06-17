@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  password    String
+  name        String?
+  role        String   @default("INSPECTOR")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  claims      Claim[]
+  inspections Inspection[]
+
+  @@map("users")
+}
+
+model Claim {
+  id          String   @id @default(cuid())
+  claimNumber String   @unique
+  clientName  String
+  clientEmail String?
+  clientPhone String?
+  address     String
+  status      String   @default("NEW")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+
+  user        User         @relation(fields: [userId], references: [id])
+  inspections Inspection[]
+
+  @@map("claims")
+}
+
+model Inspection {
+  id          String    @id @default(cuid())
+  claimId     String
+  inspectorId String
+  data        Json
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  claim     Claim  @relation(fields: [claimId], references: [id])
+  inspector User   @relation(fields: [inspectorId], references: [id])
+  photos    Photo[]
+
+  @@map("inspections")
+}
+
+model Photo {
+  id           String    @id @default(cuid())
+  inspectionId String
+  uploadthingId String?
+  url          String
+  caption      String?
+  metadata     Json?
+  takenAt      DateTime  @default(now())
+  createdAt    DateTime  @default(now())
+
+  inspection Inspection @relation(fields: [inspectionId], references: [id])
+
+  @@map("photos")
+}
