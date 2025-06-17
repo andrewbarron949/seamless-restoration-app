@@ -2,23 +2,27 @@
 
 ## Project Overview
 **Phase**: Foundation Setup Complete ✅  
-**Current State**: Database infrastructure implemented, ready for authentication and UI development
+**Current State**: Database infrastructure implemented with Prisma ORM, ready for authentication and UI development  
+**Last Updated**: June 17, 2025
 
 This is a Next.js web application for Seamless Restoration that will provide inspection management, claims tracking, and photo documentation capabilities. The app is designed for insurance inspectors, managers, and clients to streamline the restoration claims process.
 
 **Target Users:**
 - Insurance Inspectors (field data collection)
-- Managers (oversight and reporting)
+- Managers (oversight and reporting) 
 - Clients (claim status tracking)
+
+**Repository**: https://github.com/andrewbarron949/seamless-restoration-app.git
 
 ## Tech Stack
 
 ### ✅ Implemented Technologies
 - **Frontend**: Next.js 15.3.3 (App Router), React 19, TypeScript 5
 - **Styling**: Tailwind CSS 4 with PostCSS
-- **Database**: Prisma 6.10.0 + Neon PostgreSQL
+- **Database**: Prisma 6.10.0 + PostgreSQL (ready for Neon)
 - **Code Quality**: ESLint 9
 - **Development**: Hot reload, TypeScript strict mode
+- **Version Control**: Git with GitHub integration
 
 ### 🔄 Planned Technologies
 - **Authentication**: NextAuth.js (pending)
@@ -28,37 +32,108 @@ This is a Next.js web application for Seamless Restoration that will provide ins
 
 ## Project Structure
 ```
-src/
-  app/
-    api/
-      test-db/
-        route.ts           # Database connection test endpoint
-    favicon.ico
-    globals.css            # Global Tailwind styles
-    layout.tsx             # Root layout with metadata
-    page.tsx               # Home page (starter template)
-  lib/
-    prisma.ts              # Prisma client singleton
-prisma/
-  migrations/
-    20250617184721_init/   # Initial database migration
-  schema.prisma            # Database schema definitions
-public/                    # Static assets (SVG icons)
-CLAUDE.md                  # This documentation file
+seamless-restoration-app/
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   │   └── test-db/
+│   │   │       └── route.ts           # Database connection test endpoint
+│   │   ├── favicon.ico
+│   │   ├── globals.css                # Global Tailwind styles
+│   │   ├── layout.tsx                 # Root layout with Geist fonts
+│   │   └── page.tsx                   # Home page (Next.js starter template)
+│   └── lib/
+│       └── prisma.ts                  # Prisma client singleton with global caching
+├── prisma/
+│   ├── migrations/
+│   │   ├── 20250617184721_init/
+│   │   │   └── migration.sql          # Initial database migration
+│   │   └── migration_lock.toml        # Migration lock file
+│   └── schema.prisma                  # Complete database schema with 4 models
+├── public/                            # Static assets (Next.js SVG icons)
+│   ├── file.svg, globe.svg, next.svg, vercel.svg, window.svg
+├── CLAUDE.md                          # This project documentation
+├── README.md                          # Next.js default README
+├── package.json                       # Dependencies with Prisma integration
+├── .gitignore                         # Includes Prisma generated files
+├── tsconfig.json                      # TypeScript configuration
+├── next.config.ts                     # Next.js configuration
+├── postcss.config.mjs                 # PostCSS for Tailwind
+└── eslint.config.mjs                  # ESLint configuration
 ```
 
 ## Database Schema
-**Migration**: `20250617184721_init` ✅ Applied
+**Migration**: `20250617184721_init` ✅ Applied  
+**Location**: `prisma/schema.prisma`
 
 ### Models Overview
-- **User**: Inspectors, managers, admin users
-- **Claim**: Insurance claims with client information
-- **Inspection**: Inspection data collection sessions
-- **Photo**: Inspection photos with metadata
+- **User**: Inspectors, managers, admin users with role-based access
+- **Claim**: Insurance claims with client contact information and status tracking
+- **Inspection**: Inspection data collection sessions with JSON data storage
+- **Photo**: Inspection photos with Uploadthing integration and metadata
+
+### Detailed Schema
+```typescript
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  password    String
+  name        String?
+  role        String   @default("INSPECTOR")  // INSPECTOR, MANAGER, ADMIN
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  claims      Claim[]
+  inspections Inspection[]
+}
+
+model Claim {
+  id          String   @id @default(cuid())
+  claimNumber String   @unique
+  clientName  String
+  clientEmail String?
+  clientPhone String?
+  address     String
+  status      String   @default("NEW")       // NEW, IN_PROGRESS, COMPLETED, CLOSED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  
+  user        User         @relation(fields: [userId], references: [id])
+  inspections Inspection[]
+}
+
+model Inspection {
+  id          String    @id @default(cuid())
+  claimId     String
+  inspectorId String
+  data        Json                            // Dynamic form data
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  claim     Claim  @relation(fields: [claimId], references: [id])
+  inspector User   @relation(fields: [inspectorId], references: [id])
+  photos    Photo[]
+}
+
+model Photo {
+  id           String    @id @default(cuid())
+  inspectionId String
+  uploadthingId String?                       // Uploadthing file ID
+  url          String
+  caption      String?
+  metadata     Json?                          // EXIF data, location, etc.
+  takenAt      DateTime  @default(now())
+  createdAt    DateTime  @default(now())
+  
+  inspection Inspection @relation(fields: [inspectionId], references: [id])
+}
+```
 
 ### Relationships
 ```
-User (1) ←→ (many) Claim
+User (1) ←→ (many) Claim (as creator/manager)
 User (1) ←→ (many) Inspection (as inspector)
 Claim (1) ←→ (many) Inspection
 Inspection (1) ←→ (many) Photo
@@ -67,25 +142,34 @@ Inspection (1) ←→ (many) Photo
 ## ✅ Completed Features
 
 ### Database Infrastructure
-- [x] Prisma ORM setup with PostgreSQL
-- [x] Database schema with 4 core models
-- [x] Foreign key relationships established
-- [x] Neon PostgreSQL connection configured
-- [x] Database migration system initialized
-- [x] Prisma client singleton pattern
-- [x] Database connection test endpoint
+- [x] Prisma ORM setup with PostgreSQL support
+- [x] Complete database schema with 4 core models (User, Claim, Inspection, Photo)
+- [x] Foreign key relationships and constraints established
+- [x] Database migration system initialized with `20250617184721_init`
+- [x] Prisma client singleton pattern with global caching
+- [x] Database connection test endpoint at `/api/test-db`
+- [x] Uploadthing integration fields ready in Photo model
+- [x] Role-based user system prepared (INSPECTOR, MANAGER, ADMIN)
 
 ### Development Environment
-- [x] Next.js 15 App Router setup
-- [x] TypeScript configuration
-- [x] Tailwind CSS 4 integration
-- [x] ESLint code quality tools
+- [x] Next.js 15.3.3 App Router setup
+- [x] TypeScript 5 strict mode configuration
+- [x] Tailwind CSS 4 integration with PostCSS
+- [x] ESLint 9 code quality tools configured
 - [x] Development server with hot reload
+- [x] Geist font family integration (Sans + Mono)
+
+### Version Control & Deployment Ready
+- [x] Git repository initialized and configured
+- [x] GitHub repository connected (andrewbarron949/seamless-restoration-app)
+- [x] Comprehensive .gitignore with Prisma exclusions
+- [x] Project documentation system established
+- [x] Clean commit history established
 
 ## Environment Variables
 **Required for Development:**
 ```bash
-# Database (Neon PostgreSQL)
+# Database (PostgreSQL - ready for Neon)
 DATABASE_URL="postgresql://user:pass@host/db?sslmode=require"
 
 # Future additions:
@@ -98,338 +182,262 @@ DATABASE_URL="postgresql://user:pass@host/db?sslmode=require"
 ## API Routes
 
 ### ✅ Implemented
-- `GET /api/test-db` - Database connectivity test
-  - Returns connection status and table counts
-  - Location: `src/app/api/test-db/route.ts`
+- `GET /api/test-db` - Database connectivity test and health check
+  - **Location**: `src/app/api/test-db/route.ts`
+  - **Purpose**: Tests Prisma connection and returns record counts for all models
+  - **Response**: JSON with connection status and table counts (users, claims, inspections, photos)
+  - **Error Handling**: Proper try/catch with detailed error messages
+  - **Database Management**: Automatic connect/disconnect cycle
 
-### 🔄 Planned
-- `POST /api/auth/register` - User registration
-- `GET/POST /api/claims` - Claims management
-- `GET/POST /api/inspections` - Inspection data
+### 🔄 Planned API Routes
+- `POST /api/auth/register` - User registration with password hashing
+- `POST /api/auth/login` - User authentication
+- `GET /api/claims` - List claims (filtered by user role)
+- `POST /api/claims` - Create new claim (managers only)
+- `GET /api/claims/[id]` - Get single claim details
+- `PATCH /api/claims/[id]` - Update claim status
+- `GET /api/inspections` - List inspections
+- `POST /api/inspections` - Create inspection submission
+- `GET /api/inspections/[id]` - Get inspection details
 - `POST /api/upload` - Photo upload via Uploadthing
+- `GET/POST /api/users` - User management (admins only)
 
 ## Components
-**Current**: Using Next.js starter template components
+
+### ✅ Current Components
+- **RootLayout** (`src/app/layout.tsx`) - Main app layout with Geist font configuration
+  - Includes global metadata (title: "Create Next App")
+  - Font variable CSS custom properties setup
+  - Antialiased text rendering
+- **HomePage** (`src/app/page.tsx`) - Landing page with Next.js starter template
+  - Responsive grid layout
+  - Next.js logo and example links
+  - Modified intro text: "This is my portfolio project"
 
 ### 🔄 Planned Components
-- `<LoginForm />` - Authentication
-- `<ClaimCard />` - Claim display
-- `<InspectionForm />` - Dynamic form builder
-- `<PhotoUpload />` - Camera + upload
-- `<Dashboard />` - Main app interface
+- `<AuthProvider />` - NextAuth session provider wrapper
+- `<LoginForm />` - User authentication form
+- `<Dashboard />` - Main authenticated user interface
+- `<Navigation />` - Role-based navigation menu
+- `<ClaimCard />` - Individual claim display component
+- `<ClaimsList />` - Claims listing with filters
+- `<InspectionForm />` - Dynamic form builder for inspections
+- `<PhotoUpload />` - Camera capture + Uploadthing integration
+- `<PhotoGallery />` - Inspection photo viewer
+- `<UserManagement />` - Admin user controls
+- `<LoadingSpinner />` - Global loading states
+- `<ErrorBoundary />` - Error handling wrapper
 
 ## Development Commands
+
+### Application Development
 ```bash
-# Development
+# Development server
 npm run dev              # Start dev server (localhost:3000)
-npm run build            # Production build
+npm run build            # Production build with type checking
 npm run start            # Start production server
 npm run lint             # ESLint code checking
 
-# Database
-npx prisma migrate dev   # Run database migrations
-npx prisma generate      # Generate Prisma client
-npx prisma studio        # Visual database browser (localhost:5555)
-npx prisma db push       # Push schema changes without migration
+# Testing database connection
+curl http://localhost:3000/api/test-db  # Test API endpoint
+```
 
-# Utilities
-npx prisma db seed       # Seed database (when implemented)
-npx prisma db reset      # Reset database (development only)
+### Database Management
+```bash
+# Prisma Core Commands
+npx prisma generate      # Generate Prisma client after schema changes
+npx prisma migrate dev   # Create and apply new migrations
+npx prisma migrate reset # Reset database and apply all migrations
+npx prisma db push       # Push schema changes without creating migration
+
+# Database Inspection
+npx prisma studio        # Visual database browser (localhost:5555)
+npx prisma db seed       # Seed database (when seed script implemented)
+
+# Migration Management
+npx prisma migrate status      # Check migration status
+npx prisma migrate resolve     # Mark failed migration as resolved
+npx prisma migrate diff        # Preview migration changes
+```
+
+### Git Commands
+```bash
+# Version control
+git add .                # Stage all changes
+git commit -m "message"  # Commit with message
+git push                 # Push to GitHub
+git status               # Check repository status
 ```
 
 ## Testing
 
-### Database Testing
-- **Test Endpoint**: `GET /api/test-db`
-- **Prisma Studio**: `npx prisma studio` (localhost:5555)
-- **Manual Testing**: Verify all CRUD operations
+### ✅ Current Testing Setup
+- **Database Health Check**: `GET /api/test-db` endpoint fully functional
+  - Tests Prisma client connection
+  - Returns count of all database models
+  - Proper error handling and response formatting
+- **Prisma Studio**: Visual database browser available at `npx prisma studio`
+- **Development Server**: Hot reload working correctly
+- **Build Process**: TypeScript compilation successful
 
-### 🔄 Planned Testing
-- Unit tests for API routes
-- Integration tests for database operations
-- E2E tests for user workflows
-- Mobile responsiveness testing
+### 🔄 Planned Testing Framework
+- **Unit Testing**: Jest + React Testing Library for components
+- **API Testing**: Supertest for API route testing
+- **Integration Testing**: Database operation testing with test database
+- **E2E Testing**: Playwright for full user workflow testing
+- **Mobile Testing**: Responsive design verification
+- **Performance Testing**: Lighthouse CI integration
 
-## Known Issues
-- **Starter Content**: Home page still shows Next.js template
-- **No Authentication**: All routes currently public
-- **No UI Components**: Need custom components for app functionality
-- **Environment**: `.env` file needs to be added to `.gitignore`
+## Known Issues & Limitations
+
+### Current State Issues
+- **Placeholder Content**: Home page displays Next.js starter template content
+- **No Authentication**: All routes are currently public (authentication pending)
+- **No Custom UI**: Using default Next.js components (custom components pending)
+- **No Database Connection**: Environment variables not configured (DATABASE_URL needed)
+- **Metadata**: Page title still shows "Create Next App" (needs customization)
+
+### Development Environment
+- **Environment Variables**: `.env` file needs DATABASE_URL configuration
+- **Database**: No actual database connected yet (ready for Neon PostgreSQL)
+- **Deployment**: Not yet configured for production deployment
 
 ## Next Steps (Priority Order)
 
 ### 🔥 Immediate (Next 1-2 weeks)
-1. **NextAuth.js Setup**
-   - Install `next-auth @auth/prisma-adapter`
-   - Configure credentials provider
-   - Add User registration/login
-   - Implement role-based access
+1. **Environment Setup & Database Connection** 
+   - Configure DATABASE_URL environment variable
+   - Set up Neon PostgreSQL database
+   - Test database connection with actual data
+   - Create initial seed data for development
 
-2. **Basic UI Framework**
-   - Create dashboard layout
-   - Build navigation component
-   - Replace starter home page
-   - Add protected route middleware
+2. **NextAuth.js Authentication Implementation**
+   - Install `next-auth @auth/prisma-adapter bcryptjs`
+   - Configure credentials provider with existing User model
+   - Create registration/login API routes
+   - Implement role-based access control (INSPECTOR, MANAGER, ADMIN)
+   - Add session management and protected routes
 
-3. **Claims Management**
-   - Claims CRUD API routes
-   - Claims list/detail pages
-   - Basic claim creation form
+3. **Basic UI Framework & Navigation**
+   - Update page metadata (remove "Create Next App" branding)
+   - Create dashboard layout with role-based navigation
+   - Build responsive navigation component
+   - Replace starter home page with proper landing/dashboard
+   - Add authentication middleware for route protection
 
 ### 📋 Medium Term (2-4 weeks)
-4. **Inspection System**
-   - Dynamic form builder
-   - Inspection data collection
-   - Form templates system
+4. **Claims Management System**
+   - Implement Claims CRUD API routes (`/api/claims`)
+   - Create Claims dashboard with list/detail views
+   - Build claim creation form with client information
+   - Add claim status tracking and updates
+   - Implement role-based claim access (managers vs inspectors)
 
-5. **Photo Upload (Uploadthing)**
-   - Photo upload API integration
-   - Camera capture component
-   - Photo gallery display
+5. **Inspection Data Collection**
+   - Create inspection submission API (`/api/inspections`)
+   - Build dynamic form builder with JSON schema
+   - Implement inspection assignment system
+   - Create inspection detail views with data display
+   - Add inspection status management (draft, completed, etc.)
 
-6. **User Management**
-   - User roles and permissions
-   - Inspector assignment
-   - Team management
+6. **Photo Upload Integration (Uploadthing)**
+   - Set up Uploadthing account and configure API keys
+   - Implement photo upload API with security
+   - Build camera capture component for mobile devices
+   - Create photo gallery with metadata display
+   - Add photo management (caption, delete, reorder)
 
 ### 🚀 Long Term (1-2 months)
-7. **Advanced Features**
-   - Real-time updates
-   - Mobile PWA capabilities
-   - Data export (PDF/CSV)
-   - Analytics dashboard
+7. **User Management & Administration**
+   - User registration and role assignment
+   - Team management for inspectors and managers
+   - User activity tracking and audit logs
+   - Inspector assignment and workload management
 
-8. **Production Deployment**
-   - Vercel deployment
-   - Environment configuration
-   - Performance optimization
-   - Security hardening
+8. **Advanced Features**
+   - Real-time notifications for claim updates
+   - Mobile PWA capabilities with offline support
+   - Data export functionality (PDF reports, CSV exports)
+   - Analytics dashboard with claim metrics and inspector performance
+
+9. **Production Deployment & Optimization**
+   - Vercel production deployment setup
+   - Environment variable configuration for production
+   - Performance optimization and caching strategies
+   - Security hardening and vulnerability assessment
+   - Custom domain configuration and SSL setup
 
 ## Code Patterns & Best Practices
 
-### Database Access
+### Database Access Pattern
 ```typescript
-// Use the singleton pattern
+// Use the singleton pattern from src/lib/prisma.ts
 import prisma from '@/lib/prisma'
 
-// Always handle connections properly
-try {
-  await prisma.$connect()
-  const result = await prisma.user.findMany()
-  return result
-} finally {
-  await prisma.$disconnect()
+// Proper connection handling (as implemented in test-db route)
+export async function GET() {
+  try {
+    await prisma.$connect()
+    const result = await prisma.user.findMany()
+    return NextResponse.json(result)
+  } catch (error) {
+    console.error('Database error:', error)
+    return NextResponse.json(
+      { error: 'Database operation failed' },
+      { status: 500 }
+    )
+  } finally {
+    await prisma.$disconnect()
+  }
 }
 ```
 
 ### API Route Structure
 ```typescript
-// src/app/api/[resource]/route.ts
+// Standard pattern: src/app/api/[resource]/route.ts
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 
+// Example from working test-db route
 export async function GET() {
-  // Implementation
-}
-
-export async function POST(request: Request) {
-  // Implementation
+  try {
+    await prisma.$connect()
+    
+    const userCount = await prisma.user.count()
+    const claimCount = await prisma.claim.count()
+    
+    return NextResponse.json({
+      message: 'Success',
+      status: 'connected',
+      counts: { users: userCount, claims: claimCount }
+    })
+  } catch (error) {
+    return NextResponse.json(
+      { 
+        message: 'Database connection failed',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    )
+  } finally {
+    await prisma.$disconnect()
+  }
 }
 ```
 
 ### TypeScript Conventions
-- Use Prisma generated types: `User`, `Claim`, `Inspection`, `Photo`
-- Strict type checking enabled
-- Prefer interfaces for component props
-- Use proper error handling with typed catches
-1.2 NextAuth.js Authentication Setup
-Install NextAuth.js: npm install next-auth @auth/prisma-adapter
-Create auth configuration in src/lib/auth.ts: import { NextAuthOptions } from "next-auth"import CredentialsProvider from "next-auth/providers/credentials"import { PrismaAdapter } from "@auth/prisma-adapter"import prisma from "@/lib/prisma"
+- **Prisma Types**: Use generated types: `User`, `Claim`, `Inspection`, `Photo`
+- **Strict Mode**: TypeScript strict mode enabled in `tsconfig.json`
+- **API Responses**: Consistent error handling with proper HTTP status codes
+- **Component Props**: Prefer interfaces for component prop definitions
+- **Error Handling**: Typed error catching with proper fallbacks
 
-Create auth route handler at src/app/api/auth/[...nextauth]/route.ts
-Configure credentials provider for email/password login
-Add bcrypt for password hashing: npm install bcryptjs @types/bcryptjs
-Create registration API at POST /api/auth/register
-Build login page at src/app/login/page.tsx
-Create SessionProvider wrapper in src/app/providers.tsx
-Add middleware.ts for route protection using NextAuth
-1.3 Base Layout & Navigation
-Create dashboard layout in src/app/dashboard/layout.tsx
-Build responsive navigation component with Tailwind
-Add role-based menu items (Inspector, Manager, Admin)
-Use useSession hook for user info display
-Create protected route wrapper using NextAuth
-Setup loading and error states
-Phase 2: Core Inspection Features (Week 3-4)
-2.1 Claims Management
-Create claims dashboard at src/app/dashboard/claims/page.tsx
-Build API routes with NextAuth session checks:
-GET /api/claims - List claims based on user role
-POST /api/claims - Create new claim (managers only)
-GET /api/claims/[id] - Get single claim details
-PATCH /api/claims/[id] - Update claim status
-Create ClaimCard component with status badges
-Add search and filter functionality
-Implement claim creation form with react-hook-form
-2.2 Inspection Form Builder
-Create dynamic form schema structure
-Build form components:
-TextInput, TextArea, Select, Checkbox components
-PhotoCapture component with camera access
-SignatureCanvas component
-Store form templates in database
-Create inspection page at src/app/dashboard/inspections/new/page.tsx
-Add form validation with zod
-Protect form submission with NextAuth session
-2.3 Photo Management with Uploadthing
-Install uploadthing: npm install uploadthing @uploadthing/react
-Create Uploadthing account at https://uploadthing.com
-Add to .env.local: UPLOADTHING_SECRET=sk_live_...UPLOADTHING_APP_ID=...
+---
 
-Setup uploadthing in src/app/api/uploadthing/core.ts: import { createUploadthing } from "uploadthing/next"import { getServerSession } from "next-auth/next"import { authOptions } from "@/lib/auth"const f = createUploadthing()export const ourFileRouter = {  inspectionPhotos: f({ image: { maxFileSize: "4MB", maxFileCount: 10 } })    .middleware(async ({ req }) => {      const session = await getServerSession(authOptions)      if (!session) throw new Error("Unauthorized")      return { userId: session.user.id }    })    .onUploadComplete(async ({ metadata, file }) => {      // Save to database via Prisma    }),}
+## Project Status Summary
 
-Create photo upload component with drag and drop
-Build photo gallery component
-Add automatic image optimization
-Phase 3: Data Persistence & Retrieval (Week 5-6)
-3.1 Inspection Submission Flow
-Create inspection submission API: POST /api/inspections
-Verify user session with NextAuth before saving
-Handle form data with Uploadthing photo URLs
-Implement Prisma transaction for data consistency
-Add success/error notifications with toast
-Create submission confirmation page
-3.2 Inspection Detail Views
-Build inspection detail page at src/app/dashboard/inspections/[id]/page.tsx
-Check user permissions with NextAuth session
-Create read-only form renderer
-Display Uploadthing photos in gallery
-Show inspection history and timestamps
-Add print-friendly view with CSS
-3.3 Data Export Features
-Create export API routes with auth checks:
-GET /api/claims/[id]/export - Export as PDF
-GET /api/reports/csv - Bulk export (managers only)
-Use react-pdf for PDF generation
-Include Uploadthing photo URLs in exports
-Add download buttons to UI
-Phase 4: Advanced Features (Week 7-8)
-4.1 Real-time Updates
-Use Vercel's Edge Functions for real-time
-Add Server-Sent Events for claim updates
-Create notification system for new assignments
-Build notification bell component
-Store preferences in Neon database
-Send notifications based on user session
-4.2 Mobile Optimization & PWA
-Configure PWA in next.config.js
-Create manifest.json with app icons
-Add service worker for offline support
-Optimize touch interactions
-Test Uploadthing camera upload on mobile
-Ensure NextAuth session persists offline
-4.3 Search & Analytics
-Implement full-text search with Neon/PostgreSQL
-Create analytics dashboard at src/app/dashboard/analytics/page.tsx
-Restrict analytics to managers/admins via NextAuth
-Use recharts for data visualization
-Query aggregated data from Neon
-Add date range filters
-Phase 5: User Management & Permissions (Week 9)
-5.1 Role-Based Access Control with NextAuth
-Extend NextAuth callbacks for role checking: callbacks: {  session: ({ session, token }) => ({    ...session,    user: {      ...session.user,      id: token.sub,      role: token.role,    },  }),  jwt: async ({ token, user }) => {    if (user) {      token.role = user.role    }    return token  },}
+**✅ Foundation Complete**: Database schema, Prisma ORM, Next.js setup, GitHub integration  
+**🔄 Next Priority**: Environment setup, authentication, and basic UI framework  
+**📊 Progress**: ~15% complete (foundation phase done)
 
-Create permission checking utilities
-Add role management UI for admins
-Implement inspector assignment system
-Build team management page
-5.2 Client Portal
-Create public claim lookup page (no auth required)
-Build magic link authentication for clients
-Add claim tracking timeline component
-Implement secure document sharing via Uploadthing
-Create client notification preferences
-Phase 6: Testing & Deployment (Week 10)
-6.1 Testing Implementation
-Setup Jest for unit tests
-Test NextAuth authentication flows
-Write tests for protected API routes
-Test Neon database connections
-Test Uploadthing file uploads
-Add error boundary components
-6.2 Vercel Production Deployment
-Push code to GitHub repository
-Connect GitHub repo to Vercel
-Add environment variables in Vercel dashboard: DATABASE_URL (Neon connection string)NEXTAUTH_URL=https://yourdomain.vercel.appNEXTAUTH_SECRET (generate with: openssl rand -base64 32)UPLOADTHING_SECRETUPLOADTHING_APP_ID
-
-Enable Vercel Analytics
-Configure custom domain (optional)
-Setup preview deployments for branches
-Phase 7: Polish & Optimization (Week 11-12)
-7.1 Performance Optimization
-Implement image optimization with Uploadthing transforms
-Add lazy loading for claim lists
-Optimize Neon queries with indexes
-Use Vercel Edge caching
-Cache NextAuth sessions appropriately
-Monitor with Vercel Analytics
-7.2 Final Features
-Add help documentation system
-Create onboarding flow for new users
-Implement forgot password flow with NextAuth
-Add activity audit logs with user tracking
-Create system settings page
-Add two-factor authentication option
-Technical Implementation Notes
-Environment Variables Structure
-# Neon Database
-DATABASE_URL="postgresql://..."
-
-# NextAuth.js
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="..." # Generate with: openssl rand -base64 32
-
-# Uploadthing
-UPLOADTHING_SECRET="sk_live_..."
-UPLOADTHING_APP_ID="..."
-
-# Vercel (auto-populated)
-VERCEL_URL="..."
-NextAuth Session Usage Pattern
-// In API routes
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
-
-export async function GET(request: Request) {
-  const session = await getServerSession(authOptions)
-  if (!session) {
-    return new Response("Unauthorized", { status: 401 })
-  }
-  // Use session.user.id, session.user.role, etc.
-}
-
-// In client components
-import { useSession } from "next-auth/react"
-
-export function MyComponent() {
-  const { data: session, status } = useSession()
-  if (status === "loading") return <p>Loading...</p>
-  if (status === "unauthenticated") return <p>Access Denied</p>
-  // Use session.user
-}
-API Route Pattern with Auth
-/api/[resource]/route.ts - GET (list), POST (create) - requires auth
-/api/[resource]/[id]/route.ts - GET, PATCH, DELETE - requires auth + ownership check
-/api/auth/[...nextauth]/route.ts - NextAuth handler
-/api/auth/register/route.ts - Public registration endpoint
-Uploadthing Integration Points
-/api/uploadthing/core.ts - File router with NextAuth checks
-/api/uploadthing/route.ts - Upload endpoint
-Components use @uploadthing/react hooks with session
-Vercel Deployment Checklist
-[ ] All environment variables set (especially NEXTAUTH_SECRET)
-[ ] NEXTAUTH_URL points to production domain
-[ ] Database migrations run on Neon production
-[ ] Build command: npm run build
-[ ] Node.js version: 18.x or later
-[ ] Enable Web Analytics
+This documentation reflects the current state as of the latest commit and should be updated as new features are implemented.
