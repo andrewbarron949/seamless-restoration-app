@@ -1,9 +1,9 @@
 # Seamless Restoration App - Documentation
 
 ## Project Overview
-**Phase**: Authentication System Complete ✅  
-**Current State**: Full authentication system implemented with NextAuth.js, user registration, login, and protected routes. Ready for claims management development.  
-**Last Updated**: June 17, 2025 (Documentation Refresh)
+**Phase**: Dashboard & Navigation System Complete ✅  
+**Current State**: Complete authentication + role-based dashboard with navigation, responsive design, and protected routes. Ready for claims management development.  
+**Last Updated**: June 18, 2025 (Phase 1.3 Complete)
 
 This is a Next.js web application for Seamless Restoration that will provide inspection management, claims tracking, and photo documentation capabilities. The app is designed for insurance inspectors, managers, and clients to streamline the restoration claims process.
 
@@ -18,18 +18,22 @@ This is a Next.js web application for Seamless Restoration that will provide ins
 
 ### ✅ Implemented Technologies
 - **Frontend**: Next.js 15.3.3 (App Router), React 19, TypeScript 5
-- **Styling**: Tailwind CSS 4 with PostCSS
-- **Database**: Prisma 6.10.0 + PostgreSQL (ready for Neon)
-- **Authentication**: NextAuth.js 4.24.11 with PrismaAdapter
-- **Security**: bcryptjs password hashing, JWT sessions
-- **Code Quality**: ESLint 9
-- **Development**: Hot reload, TypeScript strict mode
-- **Version Control**: Git with GitHub integration
+- **Styling**: Tailwind CSS 4 with PostCSS, responsive design system
+- **Database**: Prisma 6.10.0 + PostgreSQL (schema ready, awaiting production DB)
+- **Authentication**: NextAuth.js 4.24.11 with PrismaAdapter and credentials provider
+- **Security**: bcryptjs password hashing (12 rounds), JWT sessions, role-based access
+- **UI Components**: Custom React components with Tailwind styling
+- **State Management**: React hooks, NextAuth session management
+- **Code Quality**: ESLint 9 with Next.js configuration
+- **Development**: Hot reload, TypeScript strict mode, proper error handling
+- **Version Control**: Git with GitHub integration and conventional commits
 
 ### 🔄 Planned Technologies
-- **File Upload**: Uploadthing (pending)
-- **Deployment**: Vercel (pending)
-- **Testing**: Jest + React Testing Library (pending)
+- **File Upload**: Uploadthing for photo management
+- **Deployment**: Vercel for production hosting
+- **Testing**: Jest + React Testing Library for comprehensive testing
+- **Database**: Neon PostgreSQL for production
+- **Monitoring**: Application performance and error tracking
 
 ## Project Structure
 ```
@@ -45,7 +49,20 @@ seamless-restoration-app/
 │   │   │   └── test-db/
 │   │   │       └── route.ts           # Database connection test endpoint
 │   │   ├── dashboard/
-│   │   │   └── page.tsx               # Protected dashboard with user info
+│   │   │   ├── claims/
+│   │   │   │   └── page.tsx           # Claims management (Managers/Admins)
+│   │   │   ├── inspections/
+│   │   │   │   ├── new/
+│   │   │   │   │   └── page.tsx       # New inspection form (Inspectors)
+│   │   │   │   └── page.tsx           # Inspections list
+│   │   │   ├── profile/
+│   │   │   │   └── page.tsx           # User profile management
+│   │   │   ├── settings/
+│   │   │   │   └── page.tsx           # System settings (Admins only)
+│   │   │   ├── team/
+│   │   │   │   └── page.tsx           # Team management (Managers/Admins)
+│   │   │   ├── layout.tsx             # Dashboard layout with navigation
+│   │   │   └── page.tsx               # Main dashboard with role-based stats
 │   │   ├── login/
 │   │   │   └── page.tsx               # Login form with NextAuth integration
 │   │   ├── register/
@@ -55,6 +72,8 @@ seamless-restoration-app/
 │   │   ├── layout.tsx                 # Root layout with SessionProvider
 │   │   ├── page.tsx                   # Home page with auth redirect
 │   │   └── providers.tsx              # NextAuth SessionProvider wrapper
+│   ├── components/
+│   │   └── navigation.tsx             # Reusable navigation component
 │   ├── lib/
 │   │   ├── auth.ts                    # NextAuth configuration with Prisma
 │   │   └── prisma.ts                  # Prisma client singleton
@@ -236,7 +255,7 @@ VerificationToken (standalone for email verification)
 - [x] Role-based user system (INSPECTOR, MANAGER, ADMIN)
 - [x] NextAuth database adapter integration
 
-### Authentication System ✅ NEW
+### Authentication System ✅
 - [x] NextAuth.js 4.24.11 implementation with PrismaAdapter
 - [x] Credentials provider for email/password authentication
 - [x] User registration API with validation (`/api/auth/register`)
@@ -245,10 +264,28 @@ VerificationToken (standalone for email verification)
 - [x] Protected routes with middleware authentication
 - [x] Login page with form validation and error handling
 - [x] Registration page with role selection
-- [x] Dashboard page with user information display
 - [x] Session provider integration in app layout
 - [x] TypeScript type extensions for custom user properties
 - [x] Automatic redirect flow (authenticated → dashboard, unauthenticated → login)
+
+### Dashboard & Navigation System ✅ NEW
+- [x] Responsive dashboard layout with collapsible sidebar
+- [x] Role-based navigation menu (Inspector/Manager/Admin specific items)
+- [x] Mobile-friendly hamburger menu with overlay
+- [x] User profile display with role badges
+- [x] Modern Tailwind CSS design with slate color palette
+- [x] Dashboard homepage with role-specific statistics and metrics
+- [x] Quick action cards with hover effects and animations
+- [x] Role-based route protection in middleware
+- [x] Placeholder pages for all core features:
+  - [x] Claims management (Managers/Admins only)
+  - [x] Inspections list and new inspection form (Inspectors)
+  - [x] User profile management (All users)
+  - [x] Team management (Managers/Admins only)
+  - [x] System settings (Admins only)
+- [x] Reusable Navigation component
+- [x] Loading states and responsive design
+- [x] Coming soon placeholders with feature descriptions
 
 ### Development Environment
 - [x] Next.js 15.3.3 App Router setup
@@ -329,39 +366,71 @@ NEXTAUTH_SECRET="LFj1216sQkE7QcRHm/0trGPEBB5dkera4YeVuLKL2Ug="
 
 ## Components
 
-### ✅ Current Components
-**Layout & Providers:**
+### ✅ Implemented Components
+
+**Core Layout System:**
 - **RootLayout** (`src/app/layout.tsx`) - Main app layout with SessionProvider integration
-  - Updated metadata: "Seamless Restoration App"
+  - Metadata: "Seamless Restoration App"
   - Geist font family configuration
   - NextAuth SessionProvider wrapper
+  - Global CSS imports
 - **Providers** (`src/app/providers.tsx`) - NextAuth SessionProvider wrapper component
+- **DashboardLayout** (`src/app/dashboard/layout.tsx`) - Responsive dashboard layout ✅ NEW
+  - Collapsible sidebar navigation with mobile support
+  - User profile display with role badges
+  - Loading states and authentication checks
+  - Mobile hamburger menu with overlay
+
+**Navigation & UI Components:**
+- **Navigation** (`src/components/navigation.tsx`) - Reusable navigation component ✅ NEW
+  - Role-based menu items (Inspector/Manager/Admin specific)
+  - Active route highlighting
+  - Sign out functionality
+  - Mobile-responsive design
 
 **Authentication Pages:**
 - **HomePage** (`src/app/page.tsx`) - Landing page with authentication redirect
   - Automatically redirects authenticated users to dashboard
   - Clean landing page with sign in/register buttons
-  - Role information display
 - **LoginPage** (`src/app/login/page.tsx`) - User authentication form
   - Email/password form with validation
   - NextAuth signIn integration
   - Error handling and loading states
-  - Link to registration page
 - **RegisterPage** (`src/app/register/page.tsx`) - User registration form
   - Complete registration form with role selection
-  - Form validation (email format, password matching)
-  - API integration with registration endpoint
-  - Success redirect to login
+  - Form validation and API integration
 
-**Protected Pages:**
-- **DashboardPage** (`src/app/dashboard/page.tsx`) - Main authenticated interface
-  - User session display with role badge
-  - Protected route with authentication check
-  - Sign out functionality
-  - Welcome interface with user information
+**Dashboard Pages:**
+- **DashboardPage** (`src/app/dashboard/page.tsx`) - Enhanced main dashboard ✅ UPDATED
+  - Role-specific statistics and metrics
+  - Quick action cards with hover effects
+  - Time-based greetings and recent activity feed
+  - Responsive grid layout with modern design
+- **ClaimsPage** (`src/app/dashboard/claims/page.tsx`) - Claims management ✅ NEW
+  - Manager/Admin only access with role validation
+  - Claims statistics overview
+  - Coming soon placeholder with feature descriptions
+- **InspectionsPage** (`src/app/dashboard/inspections/page.tsx`) - Inspections list ✅ NEW
+  - Inspector dashboard with assignment statistics
+  - Link to new inspection form
+- **NewInspectionPage** (`src/app/dashboard/inspections/new/page.tsx`) - Inspection form ✅ NEW
+  - Inspector-only access
+  - Inspection types and equipment requirements
+  - Coming soon placeholder for dynamic forms
+- **ProfilePage** (`src/app/dashboard/profile/page.tsx`) - User profile management ✅ NEW
+  - Editable user information
+  - Account statistics and security settings
+  - Role-based information display
+- **TeamPage** (`src/app/dashboard/team/page.tsx`) - Team management ✅ NEW
+  - Manager/Admin only access
+  - Team statistics and performance metrics
+  - Coming soon placeholder for team features
+- **SettingsPage** (`src/app/dashboard/settings/page.tsx`) - System settings ✅ NEW
+  - Admin-only access with system configuration
+  - Email, security, and file upload settings
+  - System information display
 
 ### 🔄 Planned Components
-- `<Navigation />` - Role-based navigation menu
 - `<ClaimCard />` - Individual claim display component
 - `<ClaimsList />` - Claims listing with filters
 - `<InspectionForm />` - Dynamic form builder for inspections
@@ -370,6 +439,150 @@ NEXTAUTH_SECRET="LFj1216sQkE7QcRHm/0trGPEBB5dkera4YeVuLKL2Ug="
 - `<UserManagement />` - Admin user controls
 - `<LoadingSpinner />` - Global loading states
 - `<ErrorBoundary />` - Error handling wrapper
+- `<DataTable />` - Reusable data table with sorting/filtering
+- `<Modal />` - Reusable modal component
+
+## Implementation Details
+
+### Authentication Architecture
+
+**NextAuth.js Configuration** (`src/lib/auth.ts`):
+```typescript
+export const authOptions = {
+  adapter: PrismaAdapter(prisma),
+  providers: [
+    CredentialsProvider({
+      name: "credentials",
+      async authorize(credentials) {
+        // Email/password validation with bcrypt
+        // Returns user object with role information
+      }
+    })
+  ],
+  session: { strategy: "jwt" },
+  callbacks: {
+    jwt: async ({ token, user }) => {
+      // Add role to JWT token
+      if (user) {
+        token.role = user.role
+        token.id = user.id
+      }
+      return token
+    },
+    session: async ({ session, token }) => {
+      // Add role to session object
+      session.user.id = token.id
+      session.user.role = token.role
+      return session
+    },
+  },
+  pages: { signIn: "/login" }
+}
+```
+
+**User Registration API** (`src/app/api/auth/register/route.ts`):
+- Email format validation with regex
+- Password strength requirements (minimum 6 characters)
+- bcrypt hashing with 12 salt rounds
+- Role validation (INSPECTOR, MANAGER, ADMIN)
+- Duplicate user detection
+- Proper error handling and status codes
+
+**Route Protection** (`middleware.ts`):
+```typescript
+export default withAuth(
+  function middleware(req) {
+    const { pathname } = req.nextUrl
+    const token = req.nextauth.token
+    const userRole = token.role as string
+    
+    // Role-based access control
+    if (pathname.startsWith('/dashboard/claims') || pathname.startsWith('/dashboard/team')) {
+      if (!['MANAGER', 'ADMIN'].includes(userRole)) {
+        return NextResponse.redirect(new URL('/dashboard', req.url))
+      }
+    }
+    
+    if (pathname.startsWith('/dashboard/settings')) {
+      if (userRole !== 'ADMIN') {
+        return NextResponse.redirect(new URL('/dashboard', req.url))
+      }
+    }
+  }
+)
+```
+
+### Database Architecture
+
+**Prisma Schema** (`prisma/schema.prisma`):
+- **User Model**: Authentication with role-based access (INSPECTOR, MANAGER, ADMIN)
+- **NextAuth Models**: Account, Session, VerificationToken for OAuth support
+- **Core Models**: Claim, Inspection, Photo (ready for implementation)
+- **Relationships**: Foreign keys with proper cascading
+- **Table Mapping**: Custom table names for cleaner database structure
+
+**Migrations Applied**:
+1. `20250617184721_init` - Initial schema with core models
+2. `20250617192440_add_nextauth_models` - NextAuth integration models
+
+### UI/UX Architecture
+
+**Design System**:
+- **Color Palette**: Tailwind slate colors for professional appearance
+- **Typography**: Geist Sans and Mono fonts
+- **Layout**: CSS Grid and Flexbox for responsive design
+- **Icons**: Emoji-based icons for universal support
+- **Spacing**: Consistent Tailwind spacing scale
+
+**Responsive Design**:
+- **Mobile First**: All components designed for mobile, enhanced for desktop
+- **Breakpoints**: sm (640px), md (768px), lg (1024px), xl (1280px)
+- **Navigation**: Collapsible sidebar with mobile hamburger menu
+- **Touch Targets**: Minimum 44px for mobile accessibility
+
+**Component Patterns**:
+- **StatCard**: Reusable statistics display with icon, value, and description
+- **QuickAction**: Hover-enabled action cards with navigation
+- **Role Badges**: Color-coded role indicators (Admin: red, Manager: blue, Inspector: green)
+- **Loading States**: Consistent loading spinners and skeleton states
+
+### Security Implementation
+
+**Password Security**:
+- bcryptjs with 12 salt rounds
+- Client-side validation with server-side verification
+- No password storage in plain text
+
+**Session Management**:
+- JWT strategy with httpOnly cookies
+- Role-based callbacks for access control
+- Automatic session refresh
+
+**Route Protection**:
+- Middleware-level authentication checks
+- Role-based access control at route level
+- Automatic redirects for unauthorized access
+- Protected API endpoints
+
+**Data Validation**:
+- TypeScript interfaces for type safety
+- Email format validation
+- Role validation against enum values
+- SQL injection prevention through Prisma
+
+### Development Workflow
+
+**Code Quality**:
+- ESLint 9 with Next.js configuration
+- TypeScript strict mode enabled
+- Proper error handling patterns
+- Consistent naming conventions
+
+**File Organization**:
+- App Router structure for Next.js 15
+- Colocation of related components
+- Separation of concerns (lib, components, types)
+- Clear import/export patterns
 
 ## Development Commands
 
@@ -759,19 +972,20 @@ export const config = {
 
 ## Project Status Summary
 
-**✅ Authentication Phase Complete**: Full authentication system with NextAuth.js, user registration, login, protected routes, and role-based access control  
+**✅ Dashboard & Navigation Phase Complete**: Full authentication + responsive dashboard with role-based navigation, protected routes, and modern UI  
 **🔄 Next Priority**: Database production setup and claims management system implementation  
-**📊 Progress**: ~30% complete (foundation + authentication phases complete)
+**📊 Progress**: ~40% complete (foundation + authentication + dashboard phases complete)
 
-### Recent Achievements ✅
-- Complete NextAuth.js authentication system
-- User registration with password hashing and validation
-- Login/logout functionality with session management
-- Protected routes with middleware
-- Role-based access control (INSPECTOR, MANAGER, ADMIN)
-- Dashboard with user information display
-- Database schema updated with NextAuth models
-- Environment configuration for authentication
+### Recent Achievements ✅ (Phase 1.3)
+- Responsive dashboard layout with collapsible sidebar navigation
+- Role-based navigation menu with Inspector/Manager/Admin specific items
+- Mobile-first design with hamburger menu and touch-friendly interactions
+- Modern Tailwind CSS implementation with slate color palette
+- Role-specific dashboard statistics and quick action cards
+- Complete route protection with role-based access control
+- Placeholder pages for all core application features
+- Reusable component architecture with Navigation component
+- Enhanced user experience with loading states and animations
 
 ### Immediate Next Steps 🎯
 - Set up production database connection

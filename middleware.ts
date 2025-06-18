@@ -1,8 +1,36 @@
 import { withAuth } from "next-auth/middleware"
+import { NextResponse } from "next/server"
 
 export default withAuth(
   function middleware(req) {
-    // Add any additional middleware logic here if needed
+    const { pathname } = req.nextUrl
+    const token = req.nextauth.token
+    
+    // Role-based access control
+    if (token) {
+      const userRole = token.role as string
+      
+      // Manager/Admin only routes
+      if (pathname.startsWith('/dashboard/claims') || pathname.startsWith('/dashboard/team')) {
+        if (!['MANAGER', 'ADMIN'].includes(userRole)) {
+          return NextResponse.redirect(new URL('/dashboard', req.url))
+        }
+      }
+      
+      // Admin only routes
+      if (pathname.startsWith('/dashboard/settings')) {
+        if (userRole !== 'ADMIN') {
+          return NextResponse.redirect(new URL('/dashboard', req.url))
+        }
+      }
+      
+      // Inspector only routes
+      if (pathname.startsWith('/dashboard/inspections/new')) {
+        if (userRole !== 'INSPECTOR') {
+          return NextResponse.redirect(new URL('/dashboard', req.url))
+        }
+      }
+    }
   },
   {
     callbacks: {
@@ -14,6 +42,7 @@ export default withAuth(
         if (pathname.startsWith('/login') || 
             pathname.startsWith('/register') || 
             pathname.startsWith('/api/auth') ||
+            pathname.startsWith('/api/test-db') ||
             pathname === '/') {
           return true
         }
