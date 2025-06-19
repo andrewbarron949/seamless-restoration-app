@@ -20,16 +20,16 @@ interface StatCardProps {
 
 function StatCard({ title, value, icon, color, description }: StatCardProps) {
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+    <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 sm:p-6 hover:shadow-md transition-shadow duration-200">
       <div className="flex items-center">
-        <div className={`p-3 rounded-md ${color}`}>
-          <span className="text-2xl">{icon}</span>
+        <div className={`p-2 sm:p-3 rounded-md ${color} flex-shrink-0`}>
+          <span className="text-lg sm:text-2xl">{icon}</span>
         </div>
-        <div className="ml-4">
-          <h3 className="text-sm font-medium text-slate-600">{title}</h3>
-          <p className="text-2xl font-bold text-slate-900">{value}</p>
+        <div className="ml-3 sm:ml-4 flex-1 min-w-0">
+          <h3 className="text-xs sm:text-sm font-medium text-slate-600 truncate">{title}</h3>
+          <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900">{value}</p>
           {description && (
-            <p className="text-xs text-slate-500 mt-1">{description}</p>
+            <p className="text-xs text-slate-500 mt-1 truncate">{description}</p>
           )}
         </div>
       </div>
@@ -48,14 +48,14 @@ interface QuickActionProps {
 function QuickAction({ title, description, href, icon, color }: QuickActionProps) {
   return (
     <Link href={href} className="group">
-      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow duration-200">
+      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4 sm:p-6 hover:shadow-md hover:border-slate-300 transition-all duration-200">
         <div className="flex items-center">
-          <div className={`p-3 rounded-md ${color} group-hover:scale-110 transition-transform duration-200`}>
-            <span className="text-xl">{icon}</span>
+          <div className={`p-2 sm:p-3 rounded-md ${color} group-hover:scale-110 transition-transform duration-200 flex-shrink-0`}>
+            <span className="text-lg sm:text-xl">{icon}</span>
           </div>
-          <div className="ml-4">
-            <h3 className="text-sm font-medium text-slate-900 group-hover:text-slate-700">{title}</h3>
-            <p className="text-xs text-slate-500 mt-1">{description}</p>
+          <div className="ml-3 sm:ml-4 flex-1 min-w-0">
+            <h3 className="text-sm sm:text-base font-medium text-slate-900 group-hover:text-slate-700 truncate">{title}</h3>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1 line-clamp-2">{description}</p>
           </div>
         </div>
       </div>
@@ -133,19 +133,19 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 sm:space-y-8">
       {/* Welcome Header */}
-      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
-        <h1 className="text-2xl font-bold text-slate-900">
+      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 sm:p-8">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">
           {getGreeting()}, {user.name?.split(' ')[0] || 'User'}!
         </h1>
-        <p className="text-slate-600 mt-2">
-          Welcome to your {user.role.toLowerCase()} dashboard. Here's what's happening today.
+        <p className="text-slate-600 mt-2 text-sm sm:text-base lg:text-lg">
+          Welcome to your {user.role.toLowerCase()} dashboard. Here&apos;s what&apos;s happening today.
         </p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {getRoleStats().map((stat, index) => (
           <StatCard key={index} {...stat} />
         ))}
@@ -153,8 +153,8 @@ export default function DashboardPage() {
 
       {/* Quick Actions */}
       <div>
-        <h2 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-slate-900 mb-4 sm:mb-6">Quick Actions</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4 sm:gap-6">
           {getQuickActions().map((action, index) => (
             <QuickAction key={index} {...action} />
           ))}
@@ -162,28 +162,28 @@ export default function DashboardPage() {
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
-        <h2 className="text-lg font-semibold text-slate-900 mb-4">Recent Activity</h2>
-        <div className="space-y-4">
-          <div className="flex items-start space-x-3">
-            <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-            <div>
-              <p className="text-sm text-slate-700">System initialized successfully</p>
-              <p className="text-xs text-slate-500">Authentication system is working properly</p>
+      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 sm:p-8">
+        <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-slate-900 mb-4 sm:mb-6">Recent Activity</h2>
+        <div className="space-y-4 sm:space-y-6">
+          <div className="flex items-start space-x-3 sm:space-x-4">
+            <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm sm:text-base text-slate-700">System initialized successfully</p>
+              <p className="text-xs sm:text-sm text-slate-500 mt-1">Authentication system is working properly</p>
             </div>
           </div>
-          <div className="flex items-start space-x-3">
-            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-            <div>
-              <p className="text-sm text-slate-700">Dashboard layout implemented</p>
-              <p className="text-xs text-slate-500">Role-based navigation and responsive design</p>
+          <div className="flex items-start space-x-3 sm:space-x-4">
+            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm sm:text-base text-slate-700">Dashboard layout implemented</p>
+              <p className="text-xs sm:text-sm text-slate-500 mt-1">Role-based navigation and responsive design</p>
             </div>
           </div>
-          <div className="flex items-start space-x-3">
-            <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
-            <div>
-              <p className="text-sm text-slate-700">Ready for claims management</p>
-              <p className="text-xs text-slate-500">Next phase: Implementing core business logic</p>
+          <div className="flex items-start space-x-3 sm:space-x-4">
+            <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm sm:text-base text-slate-700">Ready for claims management</p>
+              <p className="text-xs sm:text-sm text-slate-500 mt-1">Next phase: Implementing core business logic</p>
             </div>
           </div>
         </div>

@@ -1,16 +1,21 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
 
 interface NavigationProps {
-  isMobile?: boolean
   onLinkClick?: () => void
 }
 
-export default function Navigation({ isMobile = false, onLinkClick }: NavigationProps) {
+interface ExtendedUser {
+  id: string
+  email: string
+  name?: string | null
+  role: string
+}
+
+export default function Navigation({ onLinkClick }: NavigationProps) {
   const { data: session } = useSession()
   const pathname = usePathname()
   
@@ -27,7 +32,7 @@ export default function Navigation({ isMobile = false, onLinkClick }: Navigation
   ]
 
   const visibleItems = menuItems.filter(item => 
-    session?.user?.role && item.roles.includes(session.user.role)
+    (session?.user as ExtendedUser)?.role && item.roles.includes((session?.user as ExtendedUser).role)
   )
 
   const handleSignOut = () => {
@@ -39,30 +44,32 @@ export default function Navigation({ isMobile = false, onLinkClick }: Navigation
   }
 
   return (
-    <nav className={`${isMobile ? 'flex flex-col space-y-1' : 'space-y-1'}`}>
+    <nav className="space-y-2">
       {visibleItems.map((item) => (
         <Link
           key={item.href}
           href={item.href}
           onClick={handleLinkClick}
-          className={`flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200 ${
+          className={`flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-all duration-200 group ${
             isActive(item.href)
-              ? 'bg-slate-100 text-slate-900 border-r-2 border-slate-900'
-              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+              ? 'bg-slate-900 text-white shadow-sm'
+              : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
-          <span className="mr-3 text-lg">{item.icon}</span>
-          {item.label}
+          <span className={`mr-3 text-lg transition-transform duration-200 ${isActive(item.href) ? '' : 'group-hover:scale-110'}`}>
+            {item.icon}
+          </span>
+          <span className="font-medium">{item.label}</span>
         </Link>
       ))}
       
-      <div className="pt-4 mt-4 border-t border-slate-200">
+      <div className="pt-6 mt-6 border-t border-slate-200">
         <button
           onClick={handleSignOut}
-          className="flex items-center w-full px-3 py-2 text-sm font-medium text-slate-600 rounded-md hover:bg-slate-50 hover:text-slate-900 transition-colors duration-200"
+          className="flex items-center w-full px-3 py-3 text-sm font-medium text-slate-600 rounded-lg hover:bg-red-50 hover:text-red-700 transition-all duration-200 group"
         >
-          <span className="mr-3 text-lg">🚪</span>
-          Sign Out
+          <span className="mr-3 text-lg group-hover:scale-110 transition-transform duration-200">🚪</span>
+          <span className="font-medium">Sign Out</span>
         </button>
       </div>
     </nav>

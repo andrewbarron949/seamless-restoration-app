@@ -3,6 +3,13 @@
 import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 
+interface ExtendedUser {
+  id: string
+  email: string
+  name?: string | null
+  role: string
+}
+
 export default function ProfilePage() {
   const { data: session } = useSession()
   const [isEditing, setIsEditing] = useState(false)
@@ -25,24 +32,24 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 sm:space-y-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">My Profile</h1>
-          <p className="text-slate-600 mt-1">Manage your account settings and preferences</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">My Profile</h1>
+          <p className="text-slate-600 mt-1 text-sm sm:text-base">Manage your account settings and preferences</p>
         </div>
         <button 
           onClick={() => setIsEditing(!isEditing)}
-          className="bg-slate-900 text-white px-4 py-2 rounded-md hover:bg-slate-800 transition-colors"
+          className="bg-slate-900 text-white px-4 py-2 rounded-md hover:bg-slate-800 transition-colors whitespace-nowrap"
         >
           {isEditing ? 'Cancel' : 'Edit Profile'}
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
-            <h2 className="text-lg font-semibold text-slate-900 mb-6">Personal Information</h2>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
+        <div className="xl:col-span-2">
+          <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 sm:p-8">
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-slate-900 mb-6">Personal Information</h2>
             
             <div className="space-y-6">
               <div>
@@ -67,9 +74,9 @@ export default function ProfilePage() {
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Role</label>
                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                  getRoleBadgeColor(session.user?.role || '')
+                  getRoleBadgeColor((session.user as ExtendedUser)?.role || '')
                 }`}>
-                  {session.user?.role || 'Unknown'}
+                  {(session.user as ExtendedUser)?.role || 'Unknown'}
                 </span>
                 <p className="text-xs text-slate-500 mt-1">Role is assigned by administrators</p>
               </div>

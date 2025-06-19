@@ -4,6 +4,13 @@ import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 import Navigation from '@/components/navigation'
 
+interface ExtendedUser {
+  id: string
+  email: string
+  name?: string | null
+  role: string
+}
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -43,7 +50,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 flex">
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div 
@@ -52,13 +59,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         />
       )}
 
-      {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      {/* Sidebar - Fixed width on desktop */}
+      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:flex lg:flex-col lg:w-64 ${
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}>
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-slate-200">
+          <div className="flex items-center justify-between p-4 border-b border-slate-200 lg:px-6">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-slate-900 rounded-full flex items-center justify-center">
                 <span className="text-white text-sm font-bold">SR</span>
@@ -79,7 +86,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
 
           {/* User info */}
-          <div className="p-4 border-b border-slate-200">
+          <div className="p-4 border-b border-slate-200 lg:px-6">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
                 <span className="text-slate-600 text-sm font-medium">
@@ -91,25 +98,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   {session.user?.name || 'User'}
                 </p>
                 <p className="text-xs text-slate-500 truncate">{session.user?.email}</p>
-                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getRoleBadgeColor(session.user?.role || '')}`}>
-                  {session.user?.role || 'Unknown'}
+                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium mt-1 ${getRoleBadgeColor((session.user as ExtendedUser)?.role || '')}`}>
+                  {(session.user as ExtendedUser)?.role || 'Unknown'}
                 </span>
               </div>
             </div>
           </div>
 
           {/* Navigation */}
-          <div className="flex-1 p-4 overflow-y-auto">
+          <div className="flex-1 p-4 overflow-y-auto lg:px-6">
             <Navigation onLinkClick={() => setSidebarOpen(false)} />
           </div>
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="lg:pl-64">
+      {/* Main content area - Full width minus sidebar */}
+      <div className="flex-1 flex flex-col min-w-0 lg:ml-0">
         {/* Top bar */}
         <div className="sticky top-0 z-10 bg-white shadow-sm border-b border-slate-200">
-          <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
             <button
               onClick={() => setSidebarOpen(true)}
               className="lg:hidden p-2 rounded-md hover:bg-slate-100"
@@ -121,15 +128,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <h2 className="text-lg font-semibold text-slate-900 lg:hidden">Dashboard</h2>
             <div className="flex items-center space-x-4">
               <div className="hidden sm:block text-sm text-slate-600">
-                Welcome back, {session.user?.name?.split(' ')[0] || 'User'}
+                Welcome back, {(session.user as ExtendedUser)?.name?.split(' ')[0] || 'User'}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Page content */}
-        <main className="p-4 lg:p-6">
-          {children}
+        {/* Page content - Full width with responsive padding */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 xl:p-10 2xl:p-12">
+          <div className="max-w-none">
+            {children}
+          </div>
         </main>
       </div>
     </div>

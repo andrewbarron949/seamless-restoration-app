@@ -4,17 +4,24 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
+interface ExtendedUser {
+  id: string
+  email: string
+  name?: string | null
+  role: string
+}
+
 export default function TeamPage() {
   const { data: session } = useSession()
   const router = useRouter()
 
   useEffect(() => {
-    if (session?.user?.role && !['MANAGER', 'ADMIN'].includes(session.user.role)) {
+    if ((session?.user as ExtendedUser)?.role && !['MANAGER', 'ADMIN'].includes((session?.user as ExtendedUser).role)) {
       router.push('/dashboard')
     }
   }, [session, router])
 
-  if (!session || !['MANAGER', 'ADMIN'].includes(session?.user?.role || '')) {
+  if (!session || !['MANAGER', 'ADMIN'].includes((session?.user as ExtendedUser)?.role || '')) {
     return (
       <div className="flex items-center justify-center min-h-96">
         <div className="text-center">
