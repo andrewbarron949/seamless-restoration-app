@@ -4,12 +4,12 @@ import prisma from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password, name, role } = await request.json()
+    const { email, password, name, organizationName } = await request.json()
 
     // Validate required fields
-    if (!email || !password) {
+    if (!email || !password || !organizationName) {
       return NextResponse.json(
-        { error: 'Email and password are required' },
+        { error: 'Email, password, and organization name are required' },
         { status: 400 }
       )
     }
@@ -31,9 +31,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate role if provided
-    const validRoles = ['INSPECTOR', 'MANAGER', 'ADMIN']
-    const userRole = role && validRoles.includes(role) ? role : 'INSPECTOR'
+    // Validate organization name
+    if (organizationName.trim().length < 2) {
+      return NextResponse.json(
+        { error: 'Organization name must be at least 2 characters long' },
+        { status: 400 }
+      )
+    }
 
     await prisma.$connect()
 
@@ -53,27 +57,50 @@ export async function POST(request: NextRequest) {
     const saltRounds = 12
     const hashedPassword = await bcrypt.hash(password, saltRounds)
 
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name: name || null,
-        role: userRole,
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        createdAt: true,
-      }
+    // Create organization and user in a transaction
+    const result = await prisma.$transaction(async (tx) => {
+      // Create organization
+      const organization = await tx.organization.create({
+        data: {
+          name: organizationName.trim(),
+        }
+      })
+
+      // Create user as organization admin/owner
+      const user = await tx.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          name: name || null,
+          role: 'ADMIN',
+          isOwner: true,
+          organizationId: organization.id,
+        },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          isOwner: true,
+          organizationId: true,
+          createdAt: true,
+          organization: {
+            select: {
+              id: true,
+              name: true,
+            }
+          }
+        }
+      })
+
+      return { user, organization }
     })
 
     return NextResponse.json(
       {
-        message: 'User created successfully',
-        user
+        message: 'Organization created successfully',
+        user: result.user,
+        organization: result.organization
       },
       { status: 201 }
     )

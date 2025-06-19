@@ -21,6 +21,14 @@ export const authOptions = {
           const user = await prisma.user.findUnique({
             where: {
               email: credentials.email
+            },
+            include: {
+              organization: {
+                select: {
+                  id: true,
+                  name: true
+                }
+              }
             }
           })
 
@@ -42,6 +50,9 @@ export const authOptions = {
             email: user.email,
             name: user.name,
             role: user.role,
+            organizationId: user.organizationId,
+            isOwner: user.isOwner,
+            organization: user.organization,
           }
         } catch (error) {
           console.error("Auth error:", error)
@@ -57,8 +68,11 @@ export const authOptions = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     jwt: async ({ token, user }: { token: any; user?: any }) => {
       if (user) {
-        token.role = user.role
         token.id = user.id
+        token.role = user.role
+        token.organizationId = user.organizationId
+        token.isOwner = user.isOwner
+        token.organization = user.organization
       }
       return token
     },
@@ -67,12 +81,23 @@ export const authOptions = {
       if (token) {
         session.user.id = token.id as string
         session.user.role = token.role as string
+        session.user.organizationId = token.organizationId as string
+        session.user.isOwner = token.isOwner as boolean
+        session.user.organization = token.organization
       }
       return session
+    },
+    redirect: async ({ url, baseUrl }: { url: string; baseUrl: string }) => {
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url
+      return baseUrl
     },
   },
   pages: {
     signIn: "/login",
+    signOut: "/login",
   },
   secret: process.env.NEXTAUTH_SECRET,
 }

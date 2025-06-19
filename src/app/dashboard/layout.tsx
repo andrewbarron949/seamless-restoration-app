@@ -9,6 +9,12 @@ interface ExtendedUser {
   email: string
   name?: string | null
   role: string
+  organizationId: string
+  isOwner: boolean
+  organization: {
+    id: string
+    name: string
+  }
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -68,11 +74,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex items-center justify-between p-4 border-b border-slate-200 lg:px-6">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-slate-900 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-bold">SR</span>
+                <span className="text-white text-sm font-bold">
+                  {(session.user as ExtendedUser)?.organization?.name?.charAt(0) || 'SR'}
+                </span>
               </div>
               <div>
-                <h1 className="text-lg font-semibold text-slate-900">Seamless</h1>
-                <p className="text-xs text-slate-500">Restoration</p>
+                <h1 className="text-lg font-semibold text-slate-900">
+                  {(session.user as ExtendedUser)?.organization?.name || 'Seamless Restoration'}
+                </h1>
+                <p className="text-xs text-slate-500">Organization</p>
               </div>
             </div>
             <button
@@ -94,9 +104,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-900 truncate">
-                  {session.user?.name || 'User'}
-                </p>
+                <div className="flex items-center space-x-2">
+                  <p className="text-sm font-medium text-slate-900 truncate">
+                    {session.user?.name || 'User'}
+                  </p>
+                  {(session.user as ExtendedUser)?.isOwner && (
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                      Owner
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-slate-500 truncate">{session.user?.email}</p>
                 <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium mt-1 ${getRoleBadgeColor((session.user as ExtendedUser)?.role || '')}`}>
                   {(session.user as ExtendedUser)?.role || 'Unknown'}

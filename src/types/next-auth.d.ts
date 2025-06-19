@@ -5,6 +5,12 @@ declare module "next-auth" {
       email: string
       name?: string | null
       role: string
+      organizationId: string
+      isOwner: boolean
+      organization: {
+        id: string
+        name: string
+      }
     }
   }
 
@@ -13,6 +19,12 @@ declare module "next-auth" {
     email: string
     name?: string | null
     role: string
+    organizationId: string
+    isOwner: boolean
+    organization: {
+      id: string
+      name: string
+    }
   }
 }
 
@@ -20,5 +32,11 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string
     role: string
+    organizationId: string
+    isOwner: boolean
+    organization: {
+      id: string
+      name: string
+    }
   }
 }

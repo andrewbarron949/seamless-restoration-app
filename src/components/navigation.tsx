@@ -13,6 +13,12 @@ interface ExtendedUser {
   email: string
   name?: string | null
   role: string
+  organizationId: string
+  isOwner: boolean
+  organization: {
+    id: string
+    name: string
+  }
 }
 
 export default function Navigation({ onLinkClick }: NavigationProps) {
@@ -27,7 +33,7 @@ export default function Navigation({ onLinkClick }: NavigationProps) {
     { href: '/dashboard/inspections', label: 'My Inspections', icon: '📋', roles: ['INSPECTOR'] },
     { href: '/dashboard/inspections/new', label: 'New Inspection', icon: '➕', roles: ['INSPECTOR'] },
     { href: '/dashboard/claims', label: 'All Claims', icon: '📄', roles: ['MANAGER', 'ADMIN'] },
-    { href: '/dashboard/team', label: 'Team Management', icon: '👥', roles: ['MANAGER', 'ADMIN'] },
+    { href: '/dashboard/users', label: 'Users', icon: '👥', roles: ['ADMIN'] },
     { href: '/dashboard/settings', label: 'System Settings', icon: '⚙️', roles: ['ADMIN'] },
   ]
 

@@ -6,11 +6,11 @@ import Link from "next/link"
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
+    organizationName: "",
     name: "",
     email: "",
     password: "",
-    confirmPassword: "",
-    role: "INSPECTOR"
+    confirmPassword: ""
   })
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -49,10 +49,10 @@ export default function RegisterPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          organizationName: formData.organizationName,
           name: formData.name,
           email: formData.email,
           password: formData.password,
-          role: formData.role,
         }),
       })
 
@@ -75,17 +75,34 @@ export default function RegisterPage() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
+            Create your organization account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Join the Seamless Restoration App
+            Set up your organization on the Seamless Restoration platform
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
+              <label htmlFor="organizationName" className="block text-sm font-medium text-gray-700">
+                Organization Name
+              </label>
+              <input
+                id="organizationName"
+                name="organizationName"
+                type="text"
+                required
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="Your organization name"
+                value={formData.organizationName}
+                onChange={handleChange}
+                disabled={isLoading}
+              />
+            </div>
+
+            <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                Full Name
+                Your Full Name
               </label>
               <input
                 id="name"
@@ -115,24 +132,6 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 disabled={isLoading}
               />
-            </div>
-
-            <div>
-              <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-                Role
-              </label>
-              <select
-                id="role"
-                name="role"
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                value={formData.role}
-                onChange={handleChange}
-                disabled={isLoading}
-              >
-                <option value="INSPECTOR">Inspector</option>
-                <option value="MANAGER">Manager</option>
-                <option value="ADMIN">Admin</option>
-              </select>
             </div>
 
             <div>
@@ -184,7 +183,7 @@ export default function RegisterPage() {
               disabled={isLoading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? "Creating account..." : "Create account"}
+              {isLoading ? "Creating organization..." : "Create organization"}
             </button>
           </div>
 

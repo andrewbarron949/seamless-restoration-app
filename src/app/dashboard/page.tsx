@@ -8,6 +8,12 @@ interface ExtendedUser {
   email: string
   name?: string | null
   role: string
+  organizationId: string
+  isOwner: boolean
+  organization: {
+    id: string
+    name: string
+  }
 }
 
 interface StatCardProps {
@@ -118,7 +124,7 @@ export default function DashboardPage() {
       case 'MANAGER':
         return [
           { title: 'View All Claims', description: 'Manage active and pending claims', href: '/dashboard/claims', icon: '📄', color: 'bg-blue-100' },
-          { title: 'Team Management', description: 'Assign inspectors and track progress', href: '/dashboard/team', icon: '👥', color: 'bg-green-100' },
+          { title: 'Inspector Dashboard', description: 'View inspector assignments and progress', href: '/dashboard/inspections', icon: '👥', color: 'bg-green-100' },
           { title: 'Generate Reports', description: 'Export analytics and performance data', href: '/dashboard/reports', icon: '📊', color: 'bg-purple-100' }
         ]
       case 'ADMIN':
@@ -140,8 +146,13 @@ export default function DashboardPage() {
           {getGreeting()}, {user.name?.split(' ')[0] || 'User'}!
         </h1>
         <p className="text-slate-600 mt-2 text-sm sm:text-base lg:text-lg">
-          Welcome to your {user.role.toLowerCase()} dashboard. Here&apos;s what&apos;s happening today.
+          Welcome to your {user.role.toLowerCase()} dashboard for {user.organization?.name}. Here&apos;s what&apos;s happening today.
         </p>
+        {user.isOwner && (
+          <div className="mt-3 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+            🎯 Organization Owner
+          </div>
+        )}
       </div>
 
       {/* Stats Grid */}

@@ -6,19 +6,25 @@ export default withAuth(
     const { pathname } = req.nextUrl
     const token = req.nextauth.token
     
-    // Role-based access control
+    // Role-based access control with organization context
     if (token) {
       const userRole = token.role as string
+      const organizationId = token.organizationId as string
+      
+      // Ensure user has organization context (all users must belong to an organization)
+      if (!organizationId) {
+        return NextResponse.redirect(new URL('/login', req.url))
+      }
       
       // Manager/Admin only routes
-      if (pathname.startsWith('/dashboard/claims') || pathname.startsWith('/dashboard/team')) {
+      if (pathname.startsWith('/dashboard/claims')) {
         if (!['MANAGER', 'ADMIN'].includes(userRole)) {
           return NextResponse.redirect(new URL('/dashboard', req.url))
         }
       }
       
-      // Admin only routes
-      if (pathname.startsWith('/dashboard/settings')) {
+      // Admin only routes (Users = former Team, Settings)
+      if (pathname.startsWith('/dashboard/users') || pathname.startsWith('/dashboard/settings')) {
         if (userRole !== 'ADMIN') {
           return NextResponse.redirect(new URL('/dashboard', req.url))
         }
@@ -29,6 +35,20 @@ export default withAuth(
         if (userRole !== 'INSPECTOR') {
           return NextResponse.redirect(new URL('/dashboard', req.url))
         }
+      }
+      
+      // API routes security - ensure organization isolation
+      if (pathname.startsWith('/api/') && !pathname.startsWith('/api/auth/')) {
+        // Add organization context headers for API routes
+        const requestHeaders = new Headers(req.headers)
+        requestHeaders.set('x-organization-id', organizationId)
+        requestHeaders.set('x-user-role', userRole)
+        
+        return NextResponse.next({
+          request: {
+            headers: requestHeaders,
+          },
+        })
       }
     }
   },
