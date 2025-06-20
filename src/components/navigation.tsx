@@ -30,11 +30,11 @@ export default function Navigation({ onLinkClick }: NavigationProps) {
   const menuItems = [
     { href: '/dashboard', label: 'Dashboard', icon: '🏠', roles: ['INSPECTOR', 'MANAGER', 'ADMIN'] },
     { href: '/dashboard/profile', label: 'My Profile', icon: '👤', roles: ['INSPECTOR', 'MANAGER', 'ADMIN'] },
-    { href: '/dashboard/inspections', label: 'My Inspections', icon: '📋', roles: ['INSPECTOR'] },
-    { href: '/dashboard/inspections/new', label: 'New Inspection', icon: '➕', roles: ['INSPECTOR'] },
-    { href: '/dashboard/claims', label: 'All Claims', icon: '📄', roles: ['MANAGER', 'ADMIN'] },
+    { href: '/dashboard/inspections', label: 'Items', icon: '📋', roles: ['INSPECTOR'] },
+    { href: '/dashboard/inspections/new', label: 'Add Item', icon: '➕', roles: ['INSPECTOR'] },
+    { href: '/dashboard/claims', label: 'Claims', icon: '📄', roles: ['MANAGER', 'ADMIN'] },
     { href: '/dashboard/users', label: 'Users', icon: '👥', roles: ['ADMIN'] },
-    { href: '/dashboard/settings', label: 'System Settings', icon: '⚙️', roles: ['ADMIN'] },
+    { href: '/dashboard/settings', label: 'Settings', icon: '⚙️', roles: ['ADMIN'] },
   ]
 
   const visibleItems = menuItems.filter(item => 

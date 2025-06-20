@@ -85,57 +85,19 @@ export default function DashboardPage() {
     return "Good evening"
   }
 
-  const getRoleStats = () => {
-    switch (user.role) {
-      case 'INSPECTOR':
-        return [
-          { title: 'Assigned Inspections', value: 12, icon: '📋', color: 'bg-blue-100', description: '3 due today' },
-          { title: 'Completed This Week', value: 8, icon: '✅', color: 'bg-green-100', description: '+2 from last week' },
-          { title: 'Photos Uploaded', value: 156, icon: '📸', color: 'bg-purple-100', description: 'This month' },
-          { title: 'Average Rating', value: '4.8', icon: '⭐', color: 'bg-yellow-100', description: 'From managers' }
-        ]
-      case 'MANAGER':
-        return [
-          { title: 'Active Claims', value: 34, icon: '📄', color: 'bg-blue-100', description: '5 urgent' },
-          { title: 'Team Members', value: 12, icon: '👥', color: 'bg-green-100', description: '2 new this month' },
-          { title: 'Completed Claims', value: 89, icon: '✅', color: 'bg-purple-100', description: 'This quarter' },
-          { title: 'Avg. Resolution Time', value: '3.2 days', icon: '⏱️', color: 'bg-orange-100', description: 'Improved 15%' }
-        ]
-      case 'ADMIN':
-        return [
-          { title: 'Total Users', value: 156, icon: '👤', color: 'bg-blue-100', description: '12 active today' },
-          { title: 'System Uptime', value: '99.9%', icon: '⚡', color: 'bg-green-100', description: 'Last 30 days' },
-          { title: 'Total Claims', value: 1247, icon: '📊', color: 'bg-purple-100', description: '+23 this week' },
-          { title: 'Storage Used', value: '2.4 TB', icon: '💾', color: 'bg-orange-100', description: '68% of quota' }
-        ]
-      default:
-        return []
-    }
-  }
-
   const getQuickActions = () => {
-    switch (user.role) {
-      case 'INSPECTOR':
-        return [
-          { title: 'Start New Inspection', description: 'Begin a new inspection assignment', href: '/dashboard/inspections/new', icon: '➕', color: 'bg-blue-100' },
-          { title: 'View My Inspections', description: 'See all your current assignments', href: '/dashboard/inspections', icon: '📋', color: 'bg-green-100' },
-          { title: 'Update Profile', description: 'Manage your account settings', href: '/dashboard/profile', icon: '👤', color: 'bg-purple-100' }
-        ]
-      case 'MANAGER':
-        return [
-          { title: 'View All Claims', description: 'Manage active and pending claims', href: '/dashboard/claims', icon: '📄', color: 'bg-blue-100' },
-          { title: 'Inspector Dashboard', description: 'View inspector assignments and progress', href: '/dashboard/inspections', icon: '👥', color: 'bg-green-100' },
-          { title: 'Generate Reports', description: 'Export analytics and performance data', href: '/dashboard/reports', icon: '📊', color: 'bg-purple-100' }
-        ]
-      case 'ADMIN':
-        return [
-          { title: 'User Management', description: 'Add, edit, and manage user accounts', href: '/dashboard/users', icon: '👥', color: 'bg-blue-100' },
-          { title: 'System Settings', description: 'Configure application settings', href: '/dashboard/settings', icon: '⚙️', color: 'bg-green-100' },
-          { title: 'View Analytics', description: 'System performance and usage metrics', href: '/dashboard/analytics', icon: '📈', color: 'bg-purple-100' }
-        ]
-      default:
-        return []
+    const baseActions = [
+      { title: 'User Profile', description: 'View and edit your profile', href: '/dashboard/profile', icon: '👤', color: 'bg-blue-100' }
+    ]
+    
+    if (user.role === 'ADMIN') {
+      baseActions.push(
+        { title: 'User Management', description: 'Manage organization users', href: '/dashboard/users', icon: '👥', color: 'bg-green-100' },
+        { title: 'Settings', description: 'Organization settings', href: '/dashboard/settings', icon: '⚙️', color: 'bg-purple-100' }
+      )
     }
+    
+    return baseActions
   }
 
   return (
@@ -146,7 +108,7 @@ export default function DashboardPage() {
           {getGreeting()}, {user.name?.split(' ')[0] || 'User'}!
         </h1>
         <p className="text-slate-600 mt-2 text-sm sm:text-base lg:text-lg">
-          Welcome to your {user.role.toLowerCase()} dashboard for {user.organization?.name}. Here&apos;s what&apos;s happening today.
+          Welcome to your {user.role.toLowerCase()} dashboard for {user.organization?.name}. This is your SaaS application starting point.
         </p>
         {user.isOwner && (
           <div className="mt-3 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
@@ -155,11 +117,35 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        {getRoleStats().map((stat, index) => (
-          <StatCard key={index} {...stat} />
-        ))}
+      {/* Template Info */}
+      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 sm:p-8">
+        <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-slate-900 mb-4">Template Features</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="flex items-center space-x-3">
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <span className="text-sm">Multi-tenant architecture</span>
+          </div>
+          <div className="flex items-center space-x-3">
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <span className="text-sm">NextAuth.js authentication</span>
+          </div>
+          <div className="flex items-center space-x-3">
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <span className="text-sm">Role-based access control</span>
+          </div>
+          <div className="flex items-center space-x-3">
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <span className="text-sm">Responsive design</span>
+          </div>
+          <div className="flex items-center space-x-3">
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <span className="text-sm">PostgreSQL + Prisma</span>
+          </div>
+          <div className="flex items-center space-x-3">
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <span className="text-sm">TypeScript ready</span>
+          </div>
+        </div>
       </div>
 
       {/* Quick Actions */}
@@ -172,29 +158,29 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Recent Activity */}
+      {/* Getting Started */}
       <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 sm:p-8">
-        <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-slate-900 mb-4 sm:mb-6">Recent Activity</h2>
+        <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-slate-900 mb-4 sm:mb-6">Getting Started</h2>
         <div className="space-y-4 sm:space-y-6">
           <div className="flex items-start space-x-3 sm:space-x-4">
             <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm sm:text-base text-slate-700">System initialized successfully</p>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">Authentication system is working properly</p>
+              <p className="text-sm sm:text-base text-slate-700">Authentication system ready</p>
+              <p className="text-xs sm:text-sm text-slate-500 mt-1">Login, registration, and session management working</p>
+            </div>
+          </div>
+          <div className="flex items-start space-x-3 sm:space-x-4">
+            <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm sm:text-base text-slate-700">Multi-tenant architecture implemented</p>
+              <p className="text-xs sm:text-sm text-slate-500 mt-1">Organization-scoped data and user management</p>
             </div>
           </div>
           <div className="flex items-start space-x-3 sm:space-x-4">
             <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm sm:text-base text-slate-700">Dashboard layout implemented</p>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">Role-based navigation and responsive design</p>
-            </div>
-          </div>
-          <div className="flex items-start space-x-3 sm:space-x-4">
-            <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm sm:text-base text-slate-700">Ready for claims management</p>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">Next phase: Implementing core business logic</p>
+              <p className="text-sm sm:text-base text-slate-700">Ready for your business logic</p>
+              <p className="text-xs sm:text-sm text-slate-500 mt-1">Start building your SaaS features on this foundation</p>
             </div>
           </div>
         </div>

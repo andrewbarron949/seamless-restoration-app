@@ -28,10 +28,10 @@ export default function Home() {
       <div className="max-w-md w-full space-y-8 text-center">
         <div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Seamless Restoration App
+            Next.js SaaS Template
           </h1>
           <p className="text-gray-600 mb-8">
-            Insurance inspection management and claims tracking platform
+            Multi-tenant SaaS application with authentication and role-based access
           </p>
         </div>
 
@@ -52,7 +52,7 @@ export default function Home() {
         </div>
 
         <div className="text-sm text-gray-500">
-          <p>Roles available: Inspector • Manager • Admin</p>
+          <p>Features: Authentication • Multi-tenant • Role-based Access</p>
         </div>
       </div>
     </div>

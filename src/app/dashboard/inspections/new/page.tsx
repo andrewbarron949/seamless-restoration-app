@@ -36,79 +36,64 @@ export default function NewInspectionPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">New Inspection</h1>
-        <p className="text-slate-600 mt-1">Create a new inspection assignment</p>
+        <h1 className="text-2xl font-bold text-slate-900">Add New Item</h1>
+        <p className="text-slate-600 mt-1">Create a new item</p>
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
-        <div className="text-center py-12">
-          <div className="text-4xl mb-4">🔧</div>
-          <h3 className="text-lg font-medium text-slate-900 mb-2">Inspection Form Coming Soon</h3>
-          <p className="text-slate-600 mb-4">This feature will be available in the next phase of development.</p>
-          <div className="text-sm text-slate-500 space-y-2">
-            <p>• Dynamic form builder for different inspection types</p>
-            <p>• Photo capture and upload functionality</p>
-            <p>• GPS location tagging</p>
-            <p>• Offline data collection support</p>
-            <p>• Real-time form validation</p>
-            <p>• Digital signature capture</p>
+        <h2 className="text-lg font-semibold text-slate-900 mb-6">Item Details</h2>
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Item Name</label>
+            <input 
+              type="text" 
+              placeholder="Enter item name"
+              className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+            />
           </div>
-          <div className="mt-6">
+          
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Description</label>
+            <textarea 
+              placeholder="Enter description"
+              rows={4}
+              className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Category</label>
+            <select className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent">
+              <option value="">Select category</option>
+              <option value="category1">Category 1</option>
+              <option value="category2">Category 2</option>
+              <option value="category3">Category 3</option>
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Status</label>
+            <select className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent">
+              <option value="draft">Draft</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+          
+          <div className="flex space-x-4">
             <button 
               onClick={() => router.push('/dashboard/inspections')}
-              className="bg-slate-900 text-white px-4 py-2 rounded-md hover:bg-slate-800 transition-colors"
+              className="flex-1 bg-slate-200 text-slate-700 px-4 py-2 rounded-md hover:bg-slate-300 transition-colors"
             >
-              Back to Inspections
+              Cancel
+            </button>
+            <button className="flex-1 bg-slate-900 text-white px-4 py-2 rounded-md hover:bg-slate-800 transition-colors">
+              Save Item
             </button>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">Inspection Types</h3>
-          <div className="space-y-3">
-            <div className="p-3 bg-slate-50 rounded-md">
-              <h4 className="font-medium text-slate-900">Property Damage Assessment</h4>
-              <p className="text-sm text-slate-600">Comprehensive property damage evaluation</p>
-            </div>
-            <div className="p-3 bg-slate-50 rounded-md">
-              <h4 className="font-medium text-slate-900">Water Damage Inspection</h4>
-              <p className="text-sm text-slate-600">Moisture detection and water damage assessment</p>
-            </div>
-            <div className="p-3 bg-slate-50 rounded-md">
-              <h4 className="font-medium text-slate-900">Fire Damage Assessment</h4>
-              <p className="text-sm text-slate-600">Fire and smoke damage evaluation</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">Required Equipment</h3>
-          <div className="space-y-2 text-sm text-slate-600">
-            <div className="flex items-center">
-              <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
-              Digital camera or smartphone
-            </div>
-            <div className="flex items-center">
-              <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
-              Measuring tape
-            </div>
-            <div className="flex items-center">
-              <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
-              Moisture meter (for water damage)
-            </div>
-            <div className="flex items-center">
-              <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
-              Flashlight or work light
-            </div>
-            <div className="flex items-center">
-              <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
-              Safety equipment (gloves, mask)
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   )
 }

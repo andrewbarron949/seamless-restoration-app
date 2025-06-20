@@ -1,36 +1,204 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js Multi-Tenant SaaS Template
 
-## Getting Started
+A complete, production-ready template for building multi-tenant SaaS applications with Next.js, featuring authentication, organization management, and role-based access control.
 
-First, run the development server:
+## ✨ Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- 🔐 **Complete Authentication System** - NextAuth.js with credentials provider
+- 🏢 **Multi-Tenant Architecture** - Organization-scoped data and user management
+- 👥 **Role-Based Access Control** - Admin, Manager, and Inspector roles
+- 📱 **Responsive Design** - Mobile-first with Tailwind CSS
+- 🛡️ **Type Safety** - Full TypeScript implementation
+- 🗄️ **Database Ready** - Prisma ORM with PostgreSQL
+- 🎨 **Modern UI** - Clean, professional interface components
+- 🔄 **Session Management** - JWT-based sessions with automatic refresh
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js 18+ 
+- PostgreSQL database
+- npm or yarn
+
+### Installation
+
+1. **Clone and install dependencies**
+   ```bash
+   git clone <your-repo>
+   cd your-saas-app
+   npm install
+   ```
+
+2. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Configure your `.env` file:
+   ```env
+   NEXTAUTH_URL=http://localhost:3000
+   NEXTAUTH_SECRET=your-secret-key
+   DATABASE_URL=postgresql://username:password@localhost:5432/your-db
+   ```
+
+3. **Set up the database**
+   ```bash
+   npx prisma generate
+   npx prisma migrate dev
+   ```
+
+4. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Create your first organization**
+   - Visit `http://localhost:3000`
+   - Click "Create Account" 
+   - Complete organization registration
+
+## 📁 Project Structure
+
+```
+src/
+├── app/                          # Next.js App Router
+│   ├── api/                      # API routes
+│   │   ├── auth/                 # Authentication endpoints
+│   │   └── users/                # User management API
+│   ├── dashboard/                # Protected dashboard pages
+│   │   ├── claims/               # Claims wireframe (Manager/Admin)
+│   │   ├── inspections/          # Items wireframe (Inspector)
+│   │   ├── profile/              # User profile
+│   │   ├── settings/             # Organization settings (Admin)
+│   │   └── users/                # User management (Admin)
+│   ├── login/                    # Login page
+│   └── register/                 # Organization registration
+├── components/                   # Reusable UI components
+├── lib/                         # Utility libraries
+│   ├── auth.ts                  # NextAuth configuration
+│   └── prisma.ts                # Database client
+└── types/                       # TypeScript type definitions
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🗄️ Database Schema
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Core Models
+- **Organization** - Multi-tenant container
+- **User** - Organization members with roles
+- **Account/Session** - NextAuth session management
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Ready for Extension
+The schema is designed for easy extension. Add your business models with proper organization scoping:
 
-## Learn More
+```typescript
+model YourModel {
+  id             String   @id @default(cuid())
+  name           String
+  organizationId String
+  userId         String
+  
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id])
+}
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 👥 User Roles
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Admin** - Full access to organization settings and user management
+- **Manager** - Access to claims and user oversight  
+- **Inspector** - Access to items and personal profile
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Role-based page access is automatically enforced through middleware.
 
-## Deploy on Vercel
+## 🛠️ Built With
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Frontend**: Next.js 15.3, React 19, TypeScript 5
+- **Authentication**: NextAuth.js 4.24 with JWT
+- **Database**: Prisma 6.10 + PostgreSQL
+- **Styling**: Tailwind CSS 4
+- **Validation**: Built-in form validation
+- **Deployment**: Vercel/Docker ready
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🎨 UI Components
+
+Pre-built, responsive components included:
+- Dashboard layouts with sidebar navigation
+- Form components with validation
+- Data tables and cards
+- Modal dialogs and notifications
+- Role-based menu systems
+
+## 🔧 Development
+
+### Available Scripts
+
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run lint         # Run ESLint
+npx prisma studio    # Open database browser
+npx prisma migrate   # Run database migrations
+```
+
+### Adding New Features
+
+1. **Create Database Models** - Add to `prisma/schema.prisma` with organization scoping
+2. **Generate Prisma Client** - `npx prisma generate`
+3. **Create API Routes** - Add to `src/app/api/` with proper authentication
+4. **Build UI Pages** - Add to `src/app/dashboard/`
+5. **Update Navigation** - Modify `src/components/navigation.tsx`
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+1. Push to GitHub
+2. Import in Vercel
+3. Add environment variables
+4. Deploy
+
+### Docker
+```bash
+docker build -t your-saas-app .
+docker run -p 3000:3000 your-saas-app
+```
+
+## 🔐 Security Features
+
+- ✅ Password hashing with bcryptjs (12 rounds)
+- ✅ JWT session tokens with automatic refresh
+- ✅ Organization data isolation
+- ✅ Role-based route protection
+- ✅ CSRF protection via NextAuth
+- ✅ SQL injection prevention via Prisma
+
+## 📝 Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `NEXTAUTH_URL` | Application URL | ✅ |
+| `NEXTAUTH_SECRET` | JWT signing secret | ✅ |
+| `DATABASE_URL` | PostgreSQL connection string | ✅ |
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+- 📖 Check the [CLAUDE.md](CLAUDE.md) for detailed technical documentation
+- 🐛 Report bugs by opening an issue
+- 💡 Request features by opening an issue
+- 💬 Ask questions in discussions
+
+---
+
+**Ready to build your SaaS?** This template provides the foundation - add your business logic and launch! 🚀

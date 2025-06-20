@@ -36,7 +36,7 @@ export default function ProfilePage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900">My Profile</h1>
-          <p className="text-slate-600 mt-1 text-sm sm:text-base">Manage your account settings and preferences</p>
+          <p className="text-slate-600 mt-1 text-sm sm:text-base">View and edit your profile information</p>
         </div>
         <button 
           onClick={() => setIsEditing(!isEditing)}

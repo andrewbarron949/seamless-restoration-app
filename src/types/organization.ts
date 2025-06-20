@@ -21,21 +21,6 @@ export interface OrganizationUser {
   organization?: Organization
 }
 
-export interface OrganizationClaim {
-  id: string
-  claimNumber: string
-  clientName: string
-  clientEmail?: string | null
-  clientPhone?: string | null
-  address: string
-  status: 'NEW' | 'IN_PROGRESS' | 'COMPLETED' | 'CLOSED'
-  createdAt: string
-  updatedAt: string
-  userId: string
-  organizationId: string
-  user?: OrganizationUser
-  organization?: Organization
-}
 
 export interface CreateUserRequest {
   name?: string
@@ -65,9 +50,6 @@ export interface OrganizationStats {
   totalInspectors: number
   totalManagers: number
   totalAdmins: number
-  totalClaims: number
-  activeClaims: number
-  completedClaims: number
 }
 
 // Multi-tenant context interface

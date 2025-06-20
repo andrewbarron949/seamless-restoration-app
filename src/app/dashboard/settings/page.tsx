@@ -36,8 +36,8 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">System Settings</h1>
-        <p className="text-slate-600 mt-1">Configure application settings and preferences</p>
+        <h1 className="text-2xl font-bold text-slate-900">Organization Settings</h1>
+        <p className="text-slate-600 mt-1">Manage your organization configuration</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -45,27 +45,27 @@ export default function SettingsPage() {
           <h2 className="text-lg font-semibold text-slate-900 mb-4">General Settings</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Application Name</label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Organization Name</label>
               <input
                 type="text"
                 className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500"
-                defaultValue="Seamless Restoration App"
+                placeholder="Your Organization"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Company Name</label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Website</label>
               <input
-                type="text"
+                type="url"
                 className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500"
-                defaultValue="Seamless Restoration LLC"
+                placeholder="https://yourcompany.com"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Support Email</label>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Contact Email</label>
               <input
                 type="email"
                 className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500"
-                placeholder="support@seamlessrestoration.com"
+                placeholder="contact@yourcompany.com"
               />
             </div>
           </div>
@@ -104,28 +104,26 @@ export default function SettingsPage() {
         </div>
 
         <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">Email Settings</h2>
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">Notifications</h2>
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">SMTP Server</label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500"
-                placeholder="smtp.gmail.com"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">SMTP Port</label>
-              <input
-                type="number"
-                className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500"
-                defaultValue="587"
-              />
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-slate-900">Email Notifications</h3>
+                <p className="text-xs text-slate-500">Send email updates to users</p>
+              </div>
+              <input type="checkbox" className="rounded" defaultChecked />
             </div>
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-medium text-slate-900">Enable SSL/TLS</h3>
-                <p className="text-xs text-slate-500">Use secure email connection</p>
+                <h3 className="text-sm font-medium text-slate-900">Weekly Reports</h3>
+                <p className="text-xs text-slate-500">Send weekly activity summaries</p>
+              </div>
+              <input type="checkbox" className="rounded" />
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-slate-900">System Alerts</h3>
+                <p className="text-xs text-slate-500">Notify about system events</p>
               </div>
               <input type="checkbox" className="rounded" defaultChecked />
             </div>
@@ -133,31 +131,33 @@ export default function SettingsPage() {
         </div>
 
         <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">File Upload Settings</h2>
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">Data & Privacy</h2>
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Max File Size (MB)</label>
-              <input
-                type="number"
-                className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500"
-                defaultValue="50"
-              />
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-slate-900">Data Retention</h3>
+                <p className="text-xs text-slate-500">How long to keep data</p>
+              </div>
+              <select className="text-sm border border-slate-300 rounded px-2 py-1">
+                <option>1 year</option>
+                <option>2 years</option>
+                <option>5 years</option>
+                <option>Forever</option>
+              </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Allowed File Types</label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500"
-                defaultValue="jpg, jpeg, png, pdf, doc, docx"
-              />
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-slate-900">Export Data</h3>
+                <p className="text-xs text-slate-500">Allow users to export their data</p>
+              </div>
+              <input type="checkbox" className="rounded" defaultChecked />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Storage Quota (GB)</label>
-              <input
-                type="number"
-                className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500"
-                defaultValue="100"
-              />
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-slate-900">Analytics</h3>
+                <p className="text-xs text-slate-500">Collect usage analytics</p>
+              </div>
+              <input type="checkbox" className="rounded" />
             </div>
           </div>
         </div>
@@ -179,8 +179,8 @@ export default function SettingsPage() {
             <span className="ml-2 font-medium text-slate-900">PostgreSQL</span>
           </div>
           <div>
-            <span className="text-slate-600">Last Updated:</span>
-            <span className="ml-2 font-medium text-slate-900">Jun 18, 2025</span>
+            <span className="text-slate-600">Template:</span>
+            <span className="ml-2 font-medium text-slate-900">Next.js SaaS</span>
           </div>
         </div>
       </div>
