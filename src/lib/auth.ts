@@ -88,6 +88,10 @@ export const authOptions = {
       return session
     },
     redirect: async ({ url, baseUrl }: { url: string; baseUrl: string }) => {
+      // Handle sign out redirects - redirect to home page
+      if (url.includes('signout')) {
+        return baseUrl
+      }
       // Allows relative callback URLs
       if (url.startsWith("/")) return `${baseUrl}${url}`
       // Allows callback URLs on the same origin
@@ -97,7 +101,6 @@ export const authOptions = {
   },
   pages: {
     signIn: "/login",
-    signOut: "/login",
   },
   secret: process.env.NEXTAUTH_SECRET,
 }

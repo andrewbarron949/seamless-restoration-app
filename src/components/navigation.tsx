@@ -42,7 +42,7 @@ export default function Navigation({ onLinkClick }: NavigationProps) {
   )
 
   const handleSignOut = () => {
-    signOut({ callbackUrl: '/login' })
+    signOut({ callbackUrl: '/' })
   }
 
   const handleLinkClick = () => {
